@@ -11,11 +11,11 @@
 - [ ] Add domain to Auth Settings → Site URL
 - [ ] Add auth callback URL: `https://yourdomain.com/auth/callback`
 
-### Stripe Setup
-- [ ] Log in to Stripe Dashboard (dashboard.stripe.com)
-- [ ] Copy Secret Key (sk_...) from Developers → API keys
-- [ ] Copy Publishable Key (pk_...) from Developers → API keys
-- [ ] Set up webhook (optional): `https://yourdomain.com/api/webhooks/stripe`
+### Coinbase Commerce Setup
+- [ ] Create account at commerce.coinbase.com
+- [ ] Complete business verification
+- [ ] Copy API Key from Settings → API keys
+- [ ] Configure payout settings (crypto or fiat conversion)
 
 ### Hostinger Setup
 - [ ] Log in to Hostinger hPanel
@@ -45,8 +45,7 @@ In Hostinger Node.js app settings or create `.env.production`:
 NODE_ENV=production
 NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key_here
-STRIPE_SECRET_KEY=sk_live_your_key_here
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_live_your_key_here
+COINBASE_COMMERCE_API_KEY=your_api_key_here
 NEXT_PUBLIC_SITE_URL=https://yourdomain.com
 AGE_VERIFICATION_PROVIDER=dob-photo
 ```
@@ -77,7 +76,7 @@ Or configure in Hostinger Node.js panel:
 - [ ] Test product browsing
 - [ ] Test location selection (map)
 - [ ] Test user registration
-- [ ] Test checkout with Stripe test card: 4242 4242 4242 4242
+- [ ] Test crypto checkout (use small amount for testing)
 
 ## 🔧 Using PM2 (Optional but Recommended)
 

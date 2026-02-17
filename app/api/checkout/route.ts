@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { stripe } from "@/lib/stripe";
 import { createClient } from "@/lib/supabase/server";
+import { createCharge } from "@/lib/coinbase-commerce";
 
 export async function POST(req: NextRequest) {
   try {
@@ -8,10 +8,6 @@ export async function POST(req: NextRequest) {
     const {
       data: { user },
     } = await supabase.auth.getUser();
-
-    if (!user) {
-      return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
-    }
 
     const body = await req.json();
     const {
@@ -24,7 +20,18 @@ export async function POST(req: NextRequest) {
       delivery_fee_cents,
       tax_cents,
       age_verified,
+      guest_email,
+      guest_phone,
+      guest_name,
     } = body;
+
+    // Allow either authenticated user OR guest checkout with email
+    if (!user && !guest_email) {
+      return NextResponse.json(
+        { error: "Authentication or guest email required" },
+        { status: 401 }
+      );
+    }
 
     if (!items || items.length === 0) {
       return NextResponse.json({ error: "No items in cart" }, { status: 400 });
@@ -101,24 +108,35 @@ export async function POST(req: NextRequest) {
       return sum + product.price_in_cents * item.quantity;
     }, 0);
 
+    // Prepare order data for authenticated or guest checkout
+    const orderData: any = {
+      fulfillment_type,
+      region_id,
+      pickup_location_id,
+      delivery_address,
+      delivery_fee_tier_id,
+      subtotal_cents: subtotalCents,
+      delivery_fee_cents: delivery_fee_cents || 0,
+      tax_cents: tax_cents || 0,
+      total_cents: subtotalCents + (delivery_fee_cents || 0) + (tax_cents || 0),
+      status: "pending",
+      age_verified,
+      payment_method: "crypto",
+    };
+
+    // Add user info for authenticated users, guest info for guests
+    if (user) {
+      orderData.user_id = user.id;
+    } else {
+      orderData.guest_email = guest_email;
+      orderData.guest_phone = guest_phone;
+      orderData.guest_name = guest_name;
+    }
+
     // Create the order in our database
     const { data: order, error: orderError } = await supabase
       .from("orders")
-      .insert({
-        user_id: user.id,
-        fulfillment_type,
-        region_id,
-        pickup_location_id,
-        delivery_address,
-        delivery_fee_tier_id,
-        subtotal_cents: subtotalCents,
-        delivery_fee_cents: delivery_fee_cents || 0,
-        tax_cents: tax_cents || 0,
-        total_cents: subtotalCents + (delivery_fee_cents || 0) + (tax_cents || 0),
-        status: "pending",
-        age_verified,
-        payment_method: "stripe",
-      })
+      .insert(orderData)
       .select()
       .single();
 
@@ -144,26 +162,46 @@ export async function POST(req: NextRequest) {
 
     await supabase.from("order_items").insert(orderItems);
 
-    // Create Stripe checkout session
+    // Create Coinbase Commerce charge
     const origin = req.headers.get("origin") || "http://localhost:3000";
-    const session = await stripe.checkout.sessions.create({
-      line_items,
-      mode: "payment",
-      success_url: `${origin}/checkout/success?order_id=${order.id}&session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${origin}/checkout?canceled=true`,
+    const totalUSD = (order.total_cents / 100).toFixed(2);
+    
+    const itemsList = items
+      .map((item: any) => `${item.quantity}x ${item.product_name}`)
+      .join(", ");
+    
+    const charge = await createCharge({
+      name: `Order #${order.id.slice(0, 8)}`,
+      description: `Smokeshop order: ${itemsList}`,
+      pricing_type: "fixed_price",
+      local_price: {
+        amount: totalUSD,
+        currency: "USD",
+      },
       metadata: {
         order_id: order.id,
-        user_id: user.id,
+        user_id: user?.id || "guest",
+        guest_email: guest_email || "",
       },
+      redirect_url: `${origin}/checkout/success?order_id=${order.id}`,
+      cancel_url: `${origin}/checkout?canceled=true`,
     });
 
-    // Update order with stripe session ID
+    // Update order with crypto charge info
     await supabase
       .from("orders")
-      .update({ stripe_session_id: session.id })
+      .update({ 
+        payment_id: charge.id,
+        crypto_charge_code: charge.code 
+      })
       .eq("id", order.id);
 
-    return NextResponse.json({ url: session.url });
+    // Return the hosted payment URL
+    return NextResponse.json({ 
+      url: charge.hosted_url,
+      order_id: order.id,
+      charge_code: charge.code
+    });
   } catch (err: any) {
     console.error("Checkout error:", err);
     return NextResponse.json(

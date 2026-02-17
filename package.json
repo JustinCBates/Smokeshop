@@ -7,36 +7,35 @@
     "build": "next build",
     "start": "node server.js",
     "start:next": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "migrate": "node scripts/run-migrations.js",
+    "setup": "node scripts/run-migrations.js && npm run build"
   },
   "dependencies": {
+    "@paypal/react-paypal-js": "latest",
+    "@supabase/ssr": "latest",
+    "@supabase/supabase-js": "latest",
+    "@tailwindcss/postcss": "^4",
+    "@turf/boolean-point-in-polygon": "latest",
+    "@turf/helpers": "latest",
+    "@types/leaflet": "latest",
+    "class-variance-authority": "latest",
+    "clsx": "latest",
+    "leaflet": "latest",
+    "lucide-react": "latest",
     "next": "^15",
     "react": "^19",
     "react-dom": "^19",
-    "@supabase/supabase-js": "latest",
-    "@supabase/ssr": "latest",
-    "@stripe/react-stripe-js": "latest",
-    "@stripe/stripe-js": "latest",
-    "stripe": "latest",
-    "server-only": "latest",
-    "@paypal/react-paypal-js": "latest",
-    "@turf/boolean-point-in-polygon": "latest",
-    "@turf/helpers": "latest",
-    "leaflet": "latest",
     "react-leaflet": "latest",
-    "@types/leaflet": "latest",
-    "lucide-react": "latest",
-    "class-variance-authority": "latest",
-    "clsx": "latest",
+    "server-only": "latest",
+    "swr": "latest",
     "tailwind-merge": "latest",
-    "tailwindcss": "^4",
-    "@tailwindcss/postcss": "^4",
-    "swr": "latest"
+    "tailwindcss": "^4"
   },
   "devDependencies": {
-    "typescript": "^5",
     "@types/node": "^22",
     "@types/react": "^19",
-    "@types/react-dom": "^19"
+    "@types/react-dom": "^19",
+    "typescript": "^5"
   }
 }

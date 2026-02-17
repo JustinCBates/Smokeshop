@@ -1,12 +1,12 @@
 # Deployment Guide: Hostinger Hosting
 
-This guide will help you deploy your Smokeshop Next.js application to Hostinger with Supabase and Stripe integration.
+This guide will help you deploy your Smokeshop Next.js application to Hostinger with Supabase and Coinbase Commerce (crypto payments) integration.
 
 ## Prerequisites
 
 - Hostinger web hosting plan with Node.js support
 - Supabase account and project
-- Stripe account
+- Coinbase Commerce account (for crypto payments)
 - Domain name configured in Hostinger
 
 ## Step 1: Set Up Supabase Database
@@ -40,6 +40,7 @@ Execute all SQL scripts in order from the `scripts/` directory:
 13. scripts/011_create_order_items.sql
 14. scripts/012_create_storage_bucket.sql
 15. scripts/013_seed_sample_data.sql
+16. scripts/014_add_crypto_payments.sql
 ```
 
 Or run all at once: `scripts/000_run_all.sql`
@@ -51,19 +52,36 @@ Or run all at once: `scripts/000_run_all.sql`
    - `https://yourdomain.com/auth/callback`
    - `https://yourdomain.com`
 
-## Step 2: Set Up Stripe
+## Step 2: Set Up Coinbase Commerce (Crypto Payments)
 
-### 2.1 Get API Keys
-1. Log in to [Stripe Dashboard](https://dashboard.stripe.com)
-2. Go to Developers > API keys
-3. Copy your:
-   - Secret key (starts with `sk_`)
-   - Publishable key (starts with `pk_`)
+### 2.1 Create Coinbase Commerce Account
+1. Go to [https://commerce.coinbase.com](https://commerce.coinbase.com)
+2. Sign up or log in with your Coinbase account
+3. Complete business verification if required
 
-### 2.2 Configure Webhooks (Optional)
-1. Go to Developers > Webhooks
-2. Add endpoint: `https://yourdomain.com/api/webhooks/stripe`
-3. Select events to listen for (e.g., `checkout.session.completed`)
+### 2.2 Get API Key
+1. In Coinbase Commerce dashboard, go to Settings
+2. Click on "API keys" in the sidebar
+3. Click "Create an API key"
+4. Copy and securely store your API key (starts with a long string)
+5. **Important:** This key is only shown once - save it immediately!
+
+### 2.3 Supported Cryptocurrencies
+Coinbase Commerce automatically accepts:
+- Bitcoin (BTC)
+- Ethereum (ETH)
+- USD Coin (USDC) - stablecoin
+- Tether (USDT) - stablecoin
+- DAI - stablecoin
+- Litecoin (LTC)
+- Dogecoin (DOGE)
+- Bitcoin Cash (BCH)
+
+### 2.4 Configure Settlement (Optional)
+1. In Settings > Payouts, choose how to receive funds:
+   - Keep as cryptocurrency
+   - Auto-convert to your local currency
+2. Set up your payout schedule
 
 ## Step 3: Deploy to Hostinger
 
@@ -140,8 +158,7 @@ app.prepare().then(() => {
 NODE_ENV=production
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-STRIPE_SECRET_KEY=your_stripe_secret_key
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=your_stripe_publishable_key
+COINBASE_COMMERCE_API_KEY=your_coinbase_commerce_api_key
 NEXT_PUBLIC_SITE_URL=https://yourdomain.com
 AGE_VERIFICATION_PROVIDER=dob-photo
 ```

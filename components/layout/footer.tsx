@@ -53,6 +53,12 @@ export function Footer() {
             >
               FAQ
             </Link>
+            <Link
+              href="/track-order"
+              className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+            >
+              Track Order
+            </Link>
           </div>
 
           {/* Contact */}

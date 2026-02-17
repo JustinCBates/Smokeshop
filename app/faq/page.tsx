@@ -25,7 +25,7 @@ const faqs = [
   {
     question: "What payment methods do you accept?",
     answer:
-      "We accept all major credit and debit cards through Stripe. PayPal support is coming soon.",
+      "We accept cryptocurrency payments including Bitcoin, Ethereum, and stablecoins.",
   },
   {
     question: "Can cannabis flower be delivered?",
