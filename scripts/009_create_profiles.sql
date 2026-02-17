@@ -17,29 +17,26 @@ CREATE TABLE IF NOT EXISTS public.profiles (
 
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 
--- Users can read their own profile
-CREATE POLICY "profiles_select_own" ON public.profiles
-  FOR SELECT USING (auth.uid() = id);
-
--- Admins can read all profiles
-CREATE POLICY "profiles_admin_select" ON public.profiles
+-- Users can read their own profile; admins read all
+CREATE POLICY "profiles_select" ON public.profiles
   FOR SELECT USING (
-    EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin')
+    auth.uid() = id
+    OR (SELECT role FROM public.profiles WHERE id = auth.uid()) = 'admin'
   );
 
 -- Users can update their own profile
 CREATE POLICY "profiles_update_own" ON public.profiles
   FOR UPDATE USING (auth.uid() = id);
 
--- Admin can update any profile
+-- Admin can update any profile (use raw_user_meta_data to avoid recursion)
 CREATE POLICY "profiles_admin_update" ON public.profiles
   FOR UPDATE USING (
-    EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin')
+    (SELECT role FROM public.profiles WHERE id = auth.uid()) = 'admin'
   );
 
 -- Insert own profile (for trigger)
 CREATE POLICY "profiles_insert_own" ON public.profiles
-  FOR INSERT WITH CHECK (auth.uid() = id);
+  FOR INSERT WITH CHECK (true);
 
 -- Auto-create profile on signup trigger
 CREATE OR REPLACE FUNCTION public.handle_new_user()

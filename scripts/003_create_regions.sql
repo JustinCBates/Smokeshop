@@ -1,9 +1,12 @@
--- Regions table: delivery zones as PostGIS polygons
+-- Regions table: delivery zones stored as GeoJSON polygons
+-- Uses JSONB for portability. Migrate to PostGIS geometry column in production.
 CREATE TABLE IF NOT EXISTS public.regions (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   region_name TEXT NOT NULL,
   state TEXT NOT NULL,
-  boundary extensions.geometry(Polygon, 4326) NOT NULL,
+  boundary JSONB NOT NULL, -- GeoJSON Polygon, e.g. {"type":"Polygon","coordinates":[[[...]]]}
+  center_lat FLOAT,
+  center_lng FLOAT,
   partner_id UUID,
   is_active BOOLEAN DEFAULT TRUE
 );

@@ -1,10 +1,12 @@
--- Pickup locations with PostGIS point geometry
+-- Pickup locations with lat/lng coordinates
+-- Uses separate lat/lng columns for portability. Migrate to PostGIS Point in production.
 CREATE TABLE IF NOT EXISTS public.pickup_locations (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   location_name TEXT NOT NULL,
   address TEXT NOT NULL,
   state TEXT NOT NULL,
-  coordinates extensions.geometry(Point, 4326) NOT NULL,
+  lat FLOAT NOT NULL,
+  lng FLOAT NOT NULL,
   extended_radius_km FLOAT,
   extended_radius_fee_cents INTEGER,
   is_active BOOLEAN DEFAULT TRUE

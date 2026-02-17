@@ -31,30 +31,30 @@ INSERT INTO public.products (sku, product_name, product_description, category, p
   ('CANN-004', 'Pre-Roll Pack 5ct', 'Assorted pre-rolls. 0.5g each. Mix of indica and sativa strains.', 'cannabis-flower', 2999, false, true, ARRAY['pre-rolls', 'variety pack', '5ct'])
 ON CONFLICT (sku) DO NOTHING;
 
--- Seed sample regions for Missouri (simplified polygons around major metro areas)
-INSERT INTO public.regions (id, region_name, state, boundary, is_active) VALUES
+-- Seed sample regions for Missouri (GeoJSON polygons around major metro areas)
+INSERT INTO public.regions (id, region_name, state, boundary, center_lat, center_lng, is_active) VALUES
   ('a1111111-1111-1111-1111-111111111111', 'Kansas City Metro', 'MO',
-   extensions.ST_SetSRID(extensions.ST_GeomFromText('POLYGON((-94.77 39.12, -94.77 38.88, -94.40 38.88, -94.40 39.12, -94.77 39.12))'), 4326),
-   true),
+   '{"type":"Polygon","coordinates":[[[-94.77,39.12],[-94.77,38.88],[-94.40,38.88],[-94.40,39.12],[-94.77,39.12]]]}',
+   39.0, -94.585, true),
   ('b2222222-2222-2222-2222-222222222222', 'St. Louis Metro', 'MO',
-   extensions.ST_SetSRID(extensions.ST_GeomFromText('POLYGON((-90.50 38.75, -90.50 38.52, -90.10 38.52, -90.10 38.75, -90.50 38.75))'), 4326),
-   true),
+   '{"type":"Polygon","coordinates":[[[-90.50,38.75],[-90.50,38.52],[-90.10,38.52],[-90.10,38.75],[-90.50,38.75]]]}',
+   38.635, -90.3, true),
   ('c3333333-3333-3333-3333-333333333333', 'Springfield Area', 'MO',
-   extensions.ST_SetSRID(extensions.ST_GeomFromText('POLYGON((-93.40 37.28, -93.40 37.12, -93.15 37.12, -93.15 37.28, -93.40 37.28))'), 4326),
-   true),
+   '{"type":"Polygon","coordinates":[[[-93.40,37.28],[-93.40,37.12],[-93.15,37.12],[-93.15,37.28],[-93.40,37.28]]]}',
+   37.2, -93.275, true),
   ('d4444444-4444-4444-4444-444444444444', 'Columbia Area', 'MO',
-   extensions.ST_SetSRID(extensions.ST_GeomFromText('POLYGON((-92.45 39.02, -92.45 38.88, -92.20 38.88, -92.20 39.02, -92.45 39.02))'), 4326),
-   true)
+   '{"type":"Polygon","coordinates":[[[-92.45,39.02],[-92.45,38.88],[-92.20,38.88],[-92.20,39.02],[-92.45,39.02]]]}',
+   38.95, -92.325, true)
 ON CONFLICT (id) DO NOTHING;
 
--- Seed pickup locations
-INSERT INTO public.pickup_locations (id, location_name, address, state, coordinates, is_active) VALUES
+-- Seed pickup locations (using lat/lng columns)
+INSERT INTO public.pickup_locations (id, location_name, address, state, lat, lng, is_active) VALUES
   ('e5555555-5555-5555-5555-555555555555', 'Generic Smokeshop - Downtown KC', '123 Main St, Kansas City, MO 64106', 'MO',
-   extensions.ST_SetSRID(extensions.ST_MakePoint(-94.5786, 39.0997), 4326), true),
+   39.0997, -94.5786, true),
   ('f6666666-6666-6666-6666-666666666666', 'Generic Smokeshop - St. Louis', '456 Market St, St. Louis, MO 63101', 'MO',
-   extensions.ST_SetSRID(extensions.ST_MakePoint(-90.1994, 38.6270), 4326), true),
+   38.6270, -90.1994, true),
   ('77777777-7777-7777-7777-777777777777', 'Generic Smokeshop - Springfield', '789 Commercial St, Springfield, MO 65803', 'MO',
-   extensions.ST_SetSRID(extensions.ST_MakePoint(-93.2923, 37.2090), 4326), true)
+   37.2090, -93.2923, true)
 ON CONFLICT (id) DO NOTHING;
 
 -- Seed region inventory (KC has everything, StL has most, Springfield limited)
