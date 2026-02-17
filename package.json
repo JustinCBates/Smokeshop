@@ -19,6 +19,8 @@
     "stripe": "latest",
     "server-only": "latest",
     "@paypal/react-paypal-js": "latest",
+    "@turf/boolean-point-in-polygon": "latest",
+    "@turf/helpers": "latest",
     "leaflet": "latest",
     "react-leaflet": "latest",
     "@types/leaflet": "latest",
