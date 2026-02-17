@@ -1,0 +1,41 @@
+{
+  "name": "generic-smokeshop",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "next": "^15",
+    "react": "^19",
+    "react-dom": "^19",
+    "@supabase/supabase-js": "latest",
+    "@supabase/ssr": "latest",
+    "@stripe/react-stripe-js": "latest",
+    "@stripe/stripe-js": "latest",
+    "stripe": "latest",
+    "server-only": "latest",
+    "@paypal/react-paypal-js": "latest",
+    "@turf/boolean-point-in-polygon": "latest",
+    "@turf/helpers": "latest",
+    "leaflet": "latest",
+    "react-leaflet": "latest",
+    "@types/leaflet": "latest",
+    "lucide-react": "latest",
+    "class-variance-authority": "latest",
+    "clsx": "latest",
+    "tailwind-merge": "latest",
+    "tailwindcss": "^4",
+    "@tailwindcss/postcss": "^4",
+    "swr": "latest"
+  },
+  "devDependencies": {
+    "typescript": "^5",
+    "@types/node": "^22",
+    "@types/react": "^19",
+    "@types/react-dom": "^19"
+  }
+}
