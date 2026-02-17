@@ -1,0 +1,119 @@
+name: Deploy to Hostinger
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  deploy:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    environment: production
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build application
+        run: pnpm build
+        env:
+          NODE_ENV: production
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          COINBASE_COMMERCE_API_KEY: ${{ secrets.COINBASE_COMMERCE_API_KEY }}
+          NEXT_PUBLIC_SITE_URL: https://thcdeliveryguy.com
+          AGE_VERIFICATION_PROVIDER: dob-photo
+
+      - name: Create deployment package
+        run: |
+          # Create a clean deployment directory
+          mkdir -p deploy
+          
+          # Copy necessary files
+          cp -r .next deploy/
+          cp -r public deploy/
+          cp -r app deploy/
+          cp -r components deploy/
+          cp -r lib deploy/
+          cp -r scripts deploy/
+          cp package.json deploy/
+          cp pnpm-lock.yaml deploy/
+          cp next.config.mjs deploy/
+          cp server.js deploy/
+          cp ecosystem.config.js deploy/
+          cp middleware.ts deploy/
+          cp tsconfig.json deploy/
+          cp postcss.config.mjs deploy/
+          
+          # Create .env.production in deployment package
+          cat > deploy/.env.production << EOF
+          NODE_ENV=production
+          NEXT_PUBLIC_SUPABASE_URL=${{ secrets.SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}
+          COINBASE_COMMERCE_API_KEY=${{ secrets.COINBASE_COMMERCE_API_KEY }}
+          COINBASE_COMMERCE_WEBHOOK_SECRET=${{ secrets.COINBASE_WEBHOOK_SECRET }}
+          NEXT_PUBLIC_SITE_URL=https://thcdeliveryguy.com
+          AGE_VERIFICATION_PROVIDER=dob-photo
+          PORT=3000
+          EOF
+
+      - name: Setup SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.HOSTINGER_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -p ${{ secrets.HOSTINGER_SSH_PORT }} -H ${{ secrets.HOSTINGER_SSH_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Deploy to Hostinger
+        run: |
+          # Sync files to Hostinger
+          rsync -avz --delete \
+            -e "ssh -p ${{ secrets.HOSTINGER_SSH_PORT }}" \
+            deploy/ \
+            ${{ secrets.HOSTINGER_SSH_USER }}@${{ secrets.HOSTINGER_SSH_HOST }}:${{ secrets.HOSTINGER_DEPLOY_PATH }}
+
+      - name: Install production dependencies on server
+        run: |
+          ssh -p ${{ secrets.HOSTINGER_SSH_PORT }} \
+            ${{ secrets.HOSTINGER_SSH_USER }}@${{ secrets.HOSTINGER_SSH_HOST }} \
+            "cd ${{ secrets.HOSTINGER_DEPLOY_PATH }} && npm install --production"
+
+      - name: Restart application
+        run: |
+          ssh -p ${{ secrets.HOSTINGER_SSH_PORT }} \
+            ${{ secrets.HOSTINGER_SSH_USER }}@${{ secrets.HOSTINGER_SSH_HOST }} \
+            "cd ${{ secrets.HOSTINGER_DEPLOY_PATH }} && pm2 restart smokeshop || pm2 start ecosystem.config.js"
+
+      - name: Verify deployment
+        run: |
+          echo "Waiting for application to start..."
+          sleep 10
+          
+          # Check if site is accessible
+          response=$(curl -s -o /dev/null -w "%{http_code}" https://thcdeliveryguy.com)
+          if [ $response -eq 200 ] || [ $response -eq 301 ] || [ $response -eq 302 ]; then
+            echo "✅ Deployment successful - Site is accessible"
+          else
+            echo "⚠️ Warning: Site returned HTTP $response"
+          fi
+
+      - name: Deployment summary
+        run: |
+          echo "🚀 Deployment completed successfully!"
+          echo "📦 Build: $(cat deploy/.next/BUILD_ID)"
+          echo "🌐 URL: https://thcdeliveryguy.com"
+          echo "⏰ Time: $(date)"
