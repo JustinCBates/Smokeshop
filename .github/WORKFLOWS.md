@@ -5,11 +5,14 @@ This guide explains the automated workflows configured for the Smokeshop reposit
 ## 🤖 Automated Workflows
 
 ### 1. Build Test (`build-test.yml`)
+
 **Triggers:**
+
 - Pull requests to `build` branch
 - Direct pushes to `build` branch
 
 **What it does:**
+
 - Tests the build on Node.js 18.x and 20.x
 - Installs dependencies with pnpm
 - Runs linter
@@ -17,11 +20,14 @@ This guide explains the automated workflows configured for the Smokeshop reposit
 - Builds the Next.js application
 
 ### 2. PR Checks (`pr-checks.yml`)
+
 **Triggers:**
+
 - Pull requests to `build` or `main` branches
 - When PRs are opened, synchronized, or reopened
 
 **What it does:**
+
 - Runs comprehensive checks on PR code
 - Generates a summary table showing pass/fail status
 - Blocks merge if build fails
@@ -38,17 +44,18 @@ To enable the build workflow, you need to add these secrets to your GitHub repos
 3. Click **New repository secret**
 4. Add each of the following secrets:
 
-| Secret Name | Description | Example Value |
-|-------------|-------------|---------------|
-| `NEXT_PUBLIC_SUPABASE_URL` | Your Supabase project URL | `https://xxxxx.supabase.co` |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anonymous/public key | `eyJhbGciOiJIUzI1NiIsInR5cCI6...` |
-| `STRIPE_SECRET_KEY` | Stripe secret key | `sk_test_xxx` or `sk_live_xxx` |
-| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Stripe publishable key | `pk_test_xxx` or `pk_live_xxx` |
-| `NEXT_PUBLIC_SITE_URL` | Your site URL | `https://yourdomain.com` |
+| Secret Name                          | Description                   | Example Value                     |
+| ------------------------------------ | ----------------------------- | --------------------------------- |
+| `NEXT_PUBLIC_SUPABASE_URL`           | Your Supabase project URL     | `https://xxxxx.supabase.co`       |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY`      | Supabase anonymous/public key | `eyJhbGciOiJIUzI1NiIsInR5cCI6...` |
+| `STRIPE_SECRET_KEY`                  | Stripe secret key             | `sk_test_xxx` or `sk_live_xxx`    |
+| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Stripe publishable key        | `pk_test_xxx` or `pk_live_xxx`    |
+| `NEXT_PUBLIC_SITE_URL`               | Your site URL                 | `https://yourdomain.com`          |
 
 ### Quick Setup Commands
 
 For test/development secrets:
+
 ```bash
 # Use test mode Stripe keys
 STRIPE_SECRET_KEY=sk_test_...
@@ -151,7 +158,8 @@ git push origin working
 
 **Error:** `pnpm install failed`
 
-**Solution:** 
+**Solution:**
+
 ```bash
 # Locally update lock file
 pnpm install
@@ -165,6 +173,7 @@ git push
 **Error:** TypeScript check fails
 
 **Solution:**
+
 ```bash
 # Run TypeScript check locally
 npx tsc --noEmit
@@ -180,6 +189,7 @@ git push
 **Error:** ESLint fails
 
 **Solution:**
+
 ```bash
 # Run linter locally
 pnpm lint
@@ -198,6 +208,7 @@ git push
 ### Cache Management
 
 The workflows use GitHub Actions cache to speed up builds:
+
 - pnpm store is cached between runs
 - Cache key is based on `pnpm-lock.yaml`
 - Automatic cache invalidation when dependencies change
@@ -205,6 +216,7 @@ The workflows use GitHub Actions cache to speed up builds:
 ### Matrix Testing
 
 The build-test workflow tests on multiple Node.js versions:
+
 - 18.x (LTS)
 - 20.x (Current LTS)
 

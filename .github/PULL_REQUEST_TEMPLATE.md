@@ -1,7 +1,9 @@
 ## Description
+
 <!-- Provide a brief description of the changes in this PR -->
 
 ## Type of Change
+
 <!-- Mark the relevant option(s) with an 'x' -->
 
 - [ ] 🐛 Bug fix (non-breaking change which fixes an issue)
@@ -14,19 +16,22 @@
 - [ ] 🧪 Test update
 
 ## Changes Made
+
 <!-- List the specific changes made in this PR -->
 
-- 
-- 
-- 
+-
+-
+-
 
 ## Related Issues
+
 <!-- Link any related issues here -->
 
 Closes #
 Relates to #
 
 ## Testing
+
 <!-- Describe the testing you've done -->
 
 - [ ] Tested locally
@@ -35,9 +40,11 @@ Relates to #
 - [ ] TypeScript checks pass
 
 ## Screenshots
+
 <!-- If applicable, add screenshots to help explain your changes -->
 
 ## Checklist
+
 <!-- Mark completed items with an 'x' -->
 
 - [ ] My code follows the project's code style
@@ -49,4 +56,5 @@ Relates to #
 - [ ] Any dependent changes have been merged and published
 
 ## Additional Notes
+
 <!-- Add any additional notes or context about the PR here -->

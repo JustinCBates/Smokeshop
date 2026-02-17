@@ -3,6 +3,7 @@
 ## 📋 Pre-Deployment Checklist
 
 ### Supabase Setup
+
 - [ ] Create Supabase project at supabase.com
 - [ ] Copy Project URL from Settings → API
 - [ ] Copy Anon Key from Settings → API
@@ -12,12 +13,14 @@
 - [ ] Add auth callback URL: `https://yourdomain.com/auth/callback`
 
 ### Stripe Setup
+
 - [ ] Log in to Stripe Dashboard (dashboard.stripe.com)
-- [ ] Copy Secret Key (sk_...) from Developers → API keys
-- [ ] Copy Publishable Key (pk_...) from Developers → API keys
+- [ ] Copy Secret Key (sk\_...) from Developers → API keys
+- [ ] Copy Publishable Key (pk\_...) from Developers → API keys
 - [ ] Set up webhook (optional): `https://yourdomain.com/api/webhooks/stripe`
 
 ### Hostinger Setup
+
 - [ ] Log in to Hostinger hPanel
 - [ ] Enable Node.js application (version 18+)
 - [ ] Note application root directory (usually `/public_html`)
@@ -29,12 +32,14 @@
 ### 1. Upload Files to Hostinger
 
 **Via Git (Recommended):**
+
 ```bash
 cd ~/public_html
 git clone https://github.com/JustinCBates/Smokeshop.git .
 ```
 
 **Via File Manager:**
+
 - Upload all files except: node_modules, .next, .env, .git
 
 ### 2. Set Environment Variables
@@ -68,6 +73,7 @@ npm start
 ```
 
 Or configure in Hostinger Node.js panel:
+
 - **Startup file**: `server.js`
 - **Application mode**: Production
 
@@ -96,6 +102,7 @@ pm2 startup
 ```
 
 PM2 Commands:
+
 - `pm2 status` - Check application status
 - `pm2 logs smokeshop` - View logs
 - `pm2 restart smokeshop` - Restart app
@@ -115,6 +122,7 @@ pm2 restart smokeshop  # or restart via Hostinger panel
 ## ❗ Troubleshooting
 
 ### App Won't Start
+
 ```bash
 # Check build
 npm run build
@@ -128,16 +136,19 @@ printenv | grep NEXT_PUBLIC
 ```
 
 ### Database Connection Issues
+
 - Verify Supabase URL and keys in environment variables
 - Check Supabase project status (not paused)
 - Test connection: `psql` with Supabase connection string
 
 ### Stripe Issues
+
 - Verify API keys match mode (test vs live)
 - Check webhook secret if using webhooks
 - Review Stripe logs in dashboard
 
 ### 502/504 Errors
+
 - Check Node.js application is running
 - Verify port configuration (default 3000)
 - Restart application
@@ -153,15 +164,17 @@ printenv | grep NEXT_PUBLIC
 ## 🧪 Test Credentials for Development
 
 **Stripe Test Cards:**
+
 - Success: 4242 4242 4242 4242
 - Decline: 4000 0000 0000 0002
 - 3D Secure: 4000 0025 0000 3155
 
 **Test the following features:**
+
 1. Product catalog loading
 2. Location/region selection (PostGIS)
 3. User authentication (Supabase)
-4. Shopping cart functionality  
+4. Shopping cart functionality
 5. Checkout process (Stripe)
 6. Order confirmation
 7. Age verification modal

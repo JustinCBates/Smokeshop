@@ -12,15 +12,18 @@ This guide will help you deploy your Smokeshop Next.js application to Hostinger 
 ## Step 1: Set Up Supabase Database
 
 ### 1.1 Create Supabase Project
+
 1. Go to [https://supabase.com](https://supabase.com) and create a new project
 2. Note your project URL and anon key from Settings > API
 
 ### 1.2 Enable PostGIS Extension
+
 1. In Supabase dashboard, go to Database > Extensions
 2. Search for "postgis" and enable it
 3. Or run the script: `scripts/001_enable_postgis.sql`
 
 ### 1.3 Run Database Migrations
+
 Execute all SQL scripts in order from the `scripts/` directory:
 
 ```sql
@@ -45,6 +48,7 @@ Execute all SQL scripts in order from the `scripts/` directory:
 Or run all at once: `scripts/000_run_all.sql`
 
 ### 1.4 Configure Authentication
+
 1. Go to Authentication > Settings in Supabase
 2. Add your Hostinger domain to "Site URL"
 3. Add redirect URLs:
@@ -54,6 +58,7 @@ Or run all at once: `scripts/000_run_all.sql`
 ## Step 2: Set Up Stripe
 
 ### 2.1 Get API Keys
+
 1. Log in to [Stripe Dashboard](https://dashboard.stripe.com)
 2. Go to Developers > API keys
 3. Copy your:
@@ -61,6 +66,7 @@ Or run all at once: `scripts/000_run_all.sql`
    - Publishable key (starts with `pk_`)
 
 ### 2.2 Configure Webhooks (Optional)
+
 1. Go to Developers > Webhooks
 2. Add endpoint: `https://yourdomain.com/api/webhooks/stripe`
 3. Select events to listen for (e.g., `checkout.session.completed`)
@@ -68,10 +74,12 @@ Or run all at once: `scripts/000_run_all.sql`
 ## Step 3: Deploy to Hostinger
 
 ### 3.1 Access Your Hosting Panel
+
 1. Log in to Hostinger hPanel
 2. Go to your hosting account
 
 ### 3.2 Enable Node.js
+
 1. In hPanel, find "Node.js" or "Application Manager"
 2. Create a new Node.js application:
    - **Node.js version**: 18.x or higher
@@ -83,14 +91,17 @@ Or run all at once: `scripts/000_run_all.sql`
 ### 3.3 Upload Project Files
 
 #### Option A: Using Git (Recommended)
+
 1. In hPanel, go to Git section or use SSH
 2. Clone your repository:
+
 ```bash
 cd ~/public_html
 git clone https://github.com/JustinCBates/Smokeshop.git .
 ```
 
 #### Option B: Using File Manager
+
 1. Compress your project locally (excluding node_modules, .next, .env)
 2. Upload via Hostinger File Manager
 3. Extract in your application root directory
@@ -100,12 +111,12 @@ git clone https://github.com/JustinCBates/Smokeshop.git .
 Create a `server.js` file in the root directory:
 
 ```javascript
-const { createServer } = require('http');
-const { parse } = require('url');
-const next = require('next');
+const { createServer } = require("http");
+const { parse } = require("url");
+const next = require("next");
 
-const dev = process.env.NODE_ENV !== 'production';
-const hostname = 'localhost';
+const dev = process.env.NODE_ENV !== "production";
+const hostname = "localhost";
 const port = process.env.PORT || 3000;
 
 const app = next({ dev, hostname, port });
@@ -117,12 +128,12 @@ app.prepare().then(() => {
       const parsedUrl = parse(req.url, true);
       await handle(req, res, parsedUrl);
     } catch (err) {
-      console.error('Error occurred handling', req.url, err);
+      console.error("Error occurred handling", req.url, err);
       res.statusCode = 500;
-      res.end('internal server error');
+      res.end("internal server error");
     }
   })
-    .once('error', (err) => {
+    .once("error", (err) => {
       console.error(err);
       process.exit(1);
     })
@@ -147,6 +158,7 @@ AGE_VERIFICATION_PROVIDER=dob-photo
 ```
 
 Alternatively, create a `.env.production` file (not recommended for security):
+
 ```bash
 cp .env.example .env.production
 # Edit with your actual values
@@ -189,10 +201,12 @@ Ensure your `package.json` has this start script:
 ### 3.8 Start the Application
 
 In Hostinger's Node.js application manager:
+
 1. Set the startup file to `server.js`
 2. Click "Start" or restart the application
 
 Or via SSH:
+
 ```bash
 npm start
 ```
@@ -200,11 +214,13 @@ npm start
 ## Step 4: Configure Domain and SSL
 
 ### 4.1 Domain Setup
+
 1. In hPanel, go to Domains
 2. Point your domain to your hosting account
 3. Ensure DNS is properly configured
 
 ### 4.2 SSL Certificate
+
 1. In hPanel, go to SSL section
 2. Install free SSL certificate (Let's Encrypt)
 3. Enable "Force HTTPS"
@@ -212,6 +228,7 @@ npm start
 ## Step 5: Verify Deployment
 
 ### 5.1 Test the Application
+
 1. Visit `https://yourdomain.com`
 2. Test key functionality:
    - Product browsing
@@ -220,7 +237,9 @@ npm start
    - Checkout process (Stripe)
 
 ### 5.2 Check Logs
+
 Monitor application logs in Hostinger panel or via SSH:
+
 ```bash
 pm2 logs # if using PM2
 # or check Node.js application logs in hPanel
@@ -229,27 +248,32 @@ pm2 logs # if using PM2
 ## Troubleshooting
 
 ### Application won't start
+
 - Check Node.js version is compatible (18+)
 - Verify all environment variables are set
 - Check build completed successfully: `npm run build`
 - Review error logs
 
 ### Database connection issues
+
 - Verify Supabase URL and keys are correct
 - Check Supabase project is not paused
 - Ensure PostGIS extension is enabled
 
 ### Stripe not working
+
 - Confirm webhook URL is correct if using webhooks
 - Check API keys are from the correct mode (test/live)
 - Verify NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY is set
 
 ### Static files not loading
+
 - Ensure `.next` folder is built and present
 - Check file permissions (755 for directories, 644 for files)
 - Verify Next.js configuration allows your domain
 
 ### Performance issues
+
 - Use Node.js production mode: `NODE_ENV=production`
 - Enable caching in Hostinger
 - Consider using PM2 for process management
@@ -291,6 +315,7 @@ pm2 startup
 ## Maintenance
 
 ### Updating the Application
+
 ```bash
 cd ~/public_html
 git pull origin main
@@ -300,10 +325,12 @@ pm2 restart smokeshop  # or restart via hPanel
 ```
 
 ### Database Backups
+
 - Use Supabase automatic backups (available in paid plans)
 - Or export database regularly via Supabase dashboard
 
 ### Monitoring
+
 - Set up Supabase alerts for database issues
 - Monitor Stripe dashboard for payment issues
 - Check Hostinger resource usage regularly
