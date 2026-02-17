@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS public.profiles (
   age_verification_method TEXT CHECK (age_verification_method IN ('dob_declaration', 'photo_id', 'third_party')),
   id_photo_url TEXT,
   id_review_status TEXT DEFAULT 'pending' CHECK (id_review_status IN ('pending', 'approved', 'rejected')),
-  id_reviewed_by UUID REFERENCES public.profiles(id),
+  id_reviewed_by UUID,
   id_reviewed_at TIMESTAMPTZ,
   created_at TIMESTAMPTZ DEFAULT now()
 );
