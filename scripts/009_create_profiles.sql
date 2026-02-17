@@ -4,62 +4,13 @@ CREATE TABLE IF NOT EXISTS public.profiles (
   first_name TEXT,
   last_name TEXT,
   date_of_birth DATE,
-  role TEXT DEFAULT 'customer' CHECK (role IN ('customer', 'partner', 'admin')),
+  role TEXT DEFAULT 'customer',
   phone TEXT,
   age_verified BOOLEAN DEFAULT FALSE,
-  age_verification_method TEXT CHECK (age_verification_method IN ('dob_declaration', 'photo_id', 'third_party')),
+  age_verification_method TEXT,
   id_photo_url TEXT,
-  id_review_status TEXT DEFAULT 'pending' CHECK (id_review_status IN ('pending', 'approved', 'rejected')),
+  id_review_status TEXT DEFAULT 'pending',
   id_reviewed_by UUID,
   id_reviewed_at TIMESTAMPTZ,
   created_at TIMESTAMPTZ DEFAULT now()
 );
-
-ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
-
--- Users can read their own profile; admins read all
-CREATE POLICY "profiles_select" ON public.profiles
-  FOR SELECT USING (
-    auth.uid() = id
-    OR (SELECT role FROM public.profiles WHERE id = auth.uid()) = 'admin'
-  );
-
--- Users can update their own profile
-CREATE POLICY "profiles_update_own" ON public.profiles
-  FOR UPDATE USING (auth.uid() = id);
-
--- Admin can update any profile (use raw_user_meta_data to avoid recursion)
-CREATE POLICY "profiles_admin_update" ON public.profiles
-  FOR UPDATE USING (
-    (SELECT role FROM public.profiles WHERE id = auth.uid()) = 'admin'
-  );
-
--- Insert own profile (for trigger)
-CREATE POLICY "profiles_insert_own" ON public.profiles
-  FOR INSERT WITH CHECK (true);
-
--- Auto-create profile on signup trigger
-CREATE OR REPLACE FUNCTION public.handle_new_user()
-RETURNS TRIGGER
-LANGUAGE plpgsql
-SECURITY DEFINER
-SET search_path = public
-AS $$
-BEGIN
-  INSERT INTO public.profiles (id, first_name, last_name)
-  VALUES (
-    new.id,
-    coalesce(new.raw_user_meta_data ->> 'first_name', null),
-    coalesce(new.raw_user_meta_data ->> 'last_name', null)
-  )
-  ON CONFLICT (id) DO NOTHING;
-  RETURN new;
-END;
-$$;
-
-DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
-
-CREATE TRIGGER on_auth_user_created
-  AFTER INSERT ON auth.users
-  FOR EACH ROW
-  EXECUTE FUNCTION public.handle_new_user();
