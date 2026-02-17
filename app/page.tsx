@@ -1,8 +1,17 @@
 import Link from "next/link"
 import { siteConfig } from "@/lib/site-config"
-import { ArrowRight, Truck, MapPin, ShieldCheck } from "lucide-react"
+import { createClient } from "@/lib/supabase/server"
+import { ArrowRight, Truck, MapPin, ShieldCheck, Package } from "lucide-react"
+import { formatCurrency } from "@/lib/utils"
 
-export default function HomePage() {
+export default async function HomePage() {
+  const supabase = await createClient()
+  const { data: featuredProducts } = await supabase
+    .from("products")
+    .select("sku, product_name, product_description, image_url, price_in_cents, category")
+    .eq("featured", true)
+    .limit(4)
+
   return (
     <div className="flex flex-col">
       {/* Hero */}
@@ -66,6 +75,58 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* Featured Products */}
+      {featuredProducts && featuredProducts.length > 0 && (
+        <section className="px-4 py-16">
+          <div className="mx-auto max-w-7xl">
+            <h2 className="mb-8 text-center text-2xl font-bold text-foreground">
+              Featured Products
+            </h2>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {featuredProducts.map((product) => (
+                <Link
+                  key={product.sku}
+                  href={`/shop/${product.sku}`}
+                  className="group overflow-hidden rounded-xl border border-border bg-card transition-all hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5"
+                >
+                  <div className="aspect-square overflow-hidden bg-muted">
+                    {product.image_url ? (
+                      <img
+                        src={product.image_url}
+                        alt={product.product_name}
+                        className="h-full w-full object-cover transition-transform group-hover:scale-105"
+                        crossOrigin="anonymous"
+                      />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center">
+                        <Package className="h-12 w-12 text-muted-foreground/30" />
+                      </div>
+                    )}
+                  </div>
+                  <div className="p-4">
+                    <h3 className="font-semibold text-foreground group-hover:text-primary line-clamp-1">
+                      {product.product_name}
+                    </h3>
+                    <p className="mt-1 text-lg font-bold text-primary">
+                      {formatCurrency(product.price_in_cents)}
+                    </p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+            <div className="mt-8 text-center">
+              <Link
+                href="/shop"
+                className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:text-primary/80"
+              >
+                View all products
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Categories */}
       <section className="px-4 py-16">

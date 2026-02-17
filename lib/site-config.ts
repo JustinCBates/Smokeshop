@@ -52,7 +52,7 @@ export const siteConfig = {
       description: "Grinders, lighters, torches, ashtrays, storage",
     },
     {
-      slug: "cbd-delta",
+      slug: "cbd-delta-products",
       name: "CBD / Delta Products",
       description: "CBD flower, edibles, tinctures, delta-8",
     },

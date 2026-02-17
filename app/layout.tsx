@@ -4,6 +4,7 @@ import { siteConfig } from "@/lib/site-config"
 import { Header } from "@/components/layout/header"
 import { Footer } from "@/components/layout/footer"
 import { AgeGateStep1 } from "@/components/modals/age-gate-step1"
+import { Providers } from "./providers"
 import "./globals.css"
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" })
@@ -32,10 +33,12 @@ export default function RootLayout({
   return (
     <html lang="en" className={inter.variable}>
       <body className="min-h-screen flex flex-col font-sans antialiased">
-        <AgeGateStep1 />
-        <Header />
-        <main className="flex-1">{children}</main>
-        <Footer />
+        <Providers>
+          <AgeGateStep1 />
+          <Header />
+          <main className="flex-1">{children}</main>
+          <Footer />
+        </Providers>
       </body>
     </html>
   )

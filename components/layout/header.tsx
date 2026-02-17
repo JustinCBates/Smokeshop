@@ -5,11 +5,13 @@ import { useState, useEffect } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { siteConfig } from "@/lib/site-config"
 import { ShoppingCart, Menu, X, User, LogOut } from "lucide-react"
+import { useCart } from "@/lib/cart-context"
 import type { User as SupaUser } from "@supabase/supabase-js"
 
 export function Header() {
   const [user, setUser] = useState<SupaUser | null>(null)
   const [menuOpen, setMenuOpen] = useState(false)
+  const { itemCount } = useCart()
 
   useEffect(() => {
     const supabase = createClient()
@@ -47,15 +49,24 @@ export function Header() {
           >
             Shop
           </Link>
-          {siteConfig.categories.map((cat) => (
-            <Link
-              key={cat.slug}
-              href={`/shop?category=${cat.slug}`}
-              className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-            >
-              {cat.name}
-            </Link>
-          ))}
+          <Link
+            href="/about"
+            className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+          >
+            About
+          </Link>
+          <Link
+            href="/contact"
+            className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+          >
+            Contact
+          </Link>
+          <Link
+            href="/faq"
+            className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+          >
+            FAQ
+          </Link>
         </nav>
 
         {/* Right actions */}
@@ -66,6 +77,11 @@ export function Header() {
             aria-label="Shopping cart"
           >
             <ShoppingCart className="h-5 w-5" />
+            {itemCount > 0 && (
+              <span className="absolute -right-2 -top-2 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
+                {itemCount > 9 ? "9+" : itemCount}
+              </span>
+            )}
           </Link>
 
           {user ? (
