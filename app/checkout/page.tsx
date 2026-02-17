@@ -40,6 +40,10 @@ export default function CheckoutPage() {
   const [loading, setLoading] = useState(false);
   const [ageConfirmed, setAgeConfirmed] = useState(false);
   const [error, setError] = useState("");
+  const [isGuest, setIsGuest] = useState(false);
+  const [guestEmail, setGuestEmail] = useState("");
+  const [guestPhone, setGuestPhone] = useState("");
+  const [guestName, setGuestName] = useState("");
 
   const taxRate = 0.0823; // MO avg sales tax
   const deliveryFee = location.fulfillmentType === "delivery" && selectedTier
@@ -79,36 +83,59 @@ export default function CheckoutPage() {
       setError("Please set your location first.");
       return;
     }
+    
+    // Validate guest info if checking out as guest
+    if (isGuest) {
+      if (!guestEmail || !guestName) {
+        setError("Please provide your email and name for order confirmation.");
+        return;
+      }
+      // Basic email validation
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(guestEmail)) {
+        setError("Please provide a valid email address.");
+        return;
+      }
+    }
 
     setLoading(true);
     setError("");
 
     try {
+      const requestBody: any = {
+        items: items.map((i) => ({
+          sku: i.sku,
+          product_name: i.product_name,
+          price_in_cents: i.price_in_cents,
+          quantity: i.quantity,
+        })),
+        fulfillment_type: location.fulfillmentType,
+        region_id: location.region?.id ?? null,
+        pickup_location_id: location.pickupLocation?.id ?? null,
+        delivery_address: location.customerAddress || null,
+        delivery_fee_tier_id: selectedTier?.id ?? null,
+        delivery_fee_cents: deliveryFee,
+        tax_cents: taxCents,
+        age_verified: ageConfirmed,
+      };
+
+      // Add guest info if guest checkout
+      if (isGuest) {
+        requestBody.guest_email = guestEmail;
+        requestBody.guest_phone = guestPhone;
+        requestBody.guest_name = guestName;
+      }
+
       const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          items: items.map((i) => ({
-            sku: i.sku,
-            product_name: i.product_name,
-            price_in_cents: i.price_in_cents,
-            quantity: i.quantity,
-          })),
-          fulfillment_type: location.fulfillmentType,
-          region_id: location.region?.id ?? null,
-          pickup_location_id: location.pickupLocation?.id ?? null,
-          delivery_address: location.customerAddress || null,
-          delivery_fee_tier_id: selectedTier?.id ?? null,
-          delivery_fee_cents: deliveryFee,
-          tax_cents: taxCents,
-          age_verified: ageConfirmed,
-        }),
+        body: JSON.stringify(requestBody),
       });
 
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Checkout failed");
 
       if (data.url) {
+        // Redirect to Coinbase Commerce hosted checkout
         window.location.href = data.url;
       }
     } catch (err: any) {
@@ -241,6 +268,89 @@ export default function CheckoutPage() {
               )}
           </section>
 
+          {/* Guest Checkout */}
+          <section className="rounded-xl border border-border bg-card p-6">
+            <h2 className="text-lg font-semibold text-foreground">
+              Contact Information
+            </h2>
+            <div className="mt-4 space-y-4">
+              <label className="flex cursor-pointer items-center gap-3">
+                <input
+                  type="checkbox"
+                  checked={isGuest}
+                  onChange={(e) => setIsGuest(e.target.checked)}
+                  className="accent-primary"
+                />
+                <div>
+                  <p className="text-sm font-medium text-foreground">
+                    Continue as guest
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    No account needed - checkout with just your email
+                  </p>
+                </div>
+              </label>
+
+              {isGuest && (
+                <div className="space-y-3 border-t border-border pt-3">
+                  <div>
+                    <label className="block text-sm font-medium text-foreground mb-1">
+                      Name <span className="text-destructive">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={guestName}
+                      onChange={(e) => setGuestName(e.target.value)}
+                      placeholder="John Doe"
+                      className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-foreground mb-1">
+                      Email <span className="text-destructive">*</span>
+                    </label>
+                    <input
+                      type="email"
+                      value={guestEmail}
+                      onChange={(e) => setGuestEmail(e.target.value)}
+                      placeholder="john@example.com"
+                      className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                      required
+                    />
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      Order confirmation will be sent to this email
+                    </p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-foreground mb-1">
+                      Phone <span className="text-muted-foreground">(optional)</span>
+                    </label>
+                    <input
+                      type="tel"
+                      value={guestPhone}
+                      onChange={(e) => setGuestPhone(e.target.value)}
+                      placeholder="(555) 123-4567"
+                      className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {!isGuest && (
+                <p className="text-sm text-muted-foreground">
+                  You're checking out with your account.{" "}
+                  <Link
+                    href="/auth/login"
+                    className="text-primary hover:underline"
+                  >
+                    Not logged in?
+                  </Link>
+                </p>
+              )}
+            </div>
+          </section>
+
           {/* Age verification */}
           <section className="rounded-xl border border-border bg-card p-6">
             <h2 className="text-lg font-semibold text-foreground">
@@ -346,12 +456,17 @@ export default function CheckoutPage() {
               ) : (
                 <CreditCard className="h-5 w-5" />
               )}
-              {loading ? "Processing..." : "Pay with Stripe"}
+              {loading ? "Processing..." : "Pay with Crypto"}
             </button>
 
-            <div className="mt-4 flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
-              <ShieldCheck className="h-3.5 w-3.5" />
-              Secure checkout powered by Stripe
+            <div className="mt-4 space-y-2">
+              <div className="flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
+                <ShieldCheck className="h-3.5 w-3.5" />
+                Secure checkout powered by Coinbase Commerce
+              </div>
+              <p className="text-center text-xs text-muted-foreground">
+                Accepts: BTC, ETH, USDC, USDT, LTC, DOGE, BCH, DAI
+              </p>
             </div>
           </div>
         </div>
