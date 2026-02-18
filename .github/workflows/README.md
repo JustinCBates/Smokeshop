@@ -5,7 +5,7 @@ This directory contains automated CI/CD workflows for the Smokeshop application.
 ## Workflows
 
 ### 1. CI - Build & Test (`ci.yml`)
-**Triggers:** Pull requests to `main` or `develop`, pushes to `develop`
+**Triggers:** Pull requests to `build` or `main`, pushes to `working` or `build`
 
 **What it does:**
 - Checks out code

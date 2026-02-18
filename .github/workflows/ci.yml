@@ -2,9 +2,9 @@ name: CI - Build & Test
 
 on:
   pull_request:
-    branches: [ main, develop ]
+    branches: [ build, main ]
   push:
-    branches: [ develop ]
+    branches: [ working, build ]
 
 jobs:
   build:
