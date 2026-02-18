@@ -92,13 +92,13 @@ jobs:
         run: |
           ssh -p ${{ secrets.HOSTINGER_SSH_PORT }} \
             ${{ secrets.HOSTINGER_SSH_USER }}@${{ secrets.HOSTINGER_SSH_HOST }} \
-            "cd ${{ secrets.HOSTINGER_DEPLOY_PATH }} && pnpm install --prod --no-frozen-lockfile"
+            "bash -lc 'cd ${{ secrets.HOSTINGER_DEPLOY_PATH }} && which pnpm && pnpm --version && pnpm install --prod --no-frozen-lockfile'"
 
       - name: Restart application
         run: |
           ssh -p ${{ secrets.HOSTINGER_SSH_PORT }} \
             ${{ secrets.HOSTINGER_SSH_USER }}@${{ secrets.HOSTINGER_SSH_HOST }} \
-            "cd ${{ secrets.HOSTINGER_DEPLOY_PATH }} && pm2 restart smokeshop || pm2 start ecosystem.config.js"
+            "bash -lc 'cd ${{ secrets.HOSTINGER_DEPLOY_PATH }} && pm2 restart smokeshop || pm2 start ecosystem.config.js'"
 
       - name: Verify deployment
         run: |
