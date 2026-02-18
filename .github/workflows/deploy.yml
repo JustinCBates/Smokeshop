@@ -43,14 +43,23 @@ jobs:
           # Create a clean deployment directory
           mkdir -p deploy
           
-          # Copy necessary files for production
+          # Copy necessary files
           cp -r .next deploy/
           cp -r public deploy/
-          cp -r node_modules deploy/
+          cp -r app deploy/
+          cp -r components deploy/
+          cp -r lib deploy/
+          cp -r scripts deploy/
           cp package.json deploy/
+          cp pnpm-lock.yaml deploy/
           cp next.config.mjs deploy/
           cp server.js deploy/
           cp ecosystem.config.js deploy/
+          cp middleware.ts deploy/
+          cp tsconfig.json deploy/
+          cp postcss.config.mjs deploy/
+          cp tailwind.config.ts deploy/
+          cp .npmrc deploy/
           
           # Create .env.production in deployment package
           cat > deploy/.env.production << EOF
@@ -79,11 +88,11 @@ jobs:
             deploy/ \
             ${{ secrets.HOSTINGER_SSH_USER }}@${{ secrets.HOSTINGER_SSH_HOST }}:${{ secrets.HOSTINGER_DEPLOY_PATH }}
 
-      - name: Verify dependencies on server
+      - name: Install production dependencies on server
         run: |
           ssh -p ${{ secrets.HOSTINGER_SSH_PORT }} \
             ${{ secrets.HOSTINGER_SSH_USER }}@${{ secrets.HOSTINGER_SSH_HOST }} \
-            "cd ${{ secrets.HOSTINGER_DEPLOY_PATH }} && echo '✅ Dependencies deployed from CI build'"
+            "cd ${{ secrets.HOSTINGER_DEPLOY_PATH }} && pnpm install --prod --no-frozen-lockfile"
 
       - name: Restart application
         run: |
