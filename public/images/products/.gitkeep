@@ -1,0 +1,8 @@
+# Product Images Directory
+
+Place product images here with the following naming convention:
+- Format: {SKU}.jpg (e.g., GLASS-001.jpg, VAPE-001.jpg)
+- Dimensions: 1000x1000px recommended
+- Format: JPG, PNG, or WebP
+
+See PRODUCT_IMAGE_LIST.md in the project root for the complete list of products needing images.
