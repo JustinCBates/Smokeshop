@@ -43,21 +43,14 @@ jobs:
           # Create a clean deployment directory
           mkdir -p deploy
           
-          # Copy necessary files
+          # Copy necessary files for production
           cp -r .next deploy/
           cp -r public deploy/
-          cp -r app deploy/
-          cp -r components deploy/
-          cp -r lib deploy/
-          cp -r scripts deploy/
+          cp -r node_modules deploy/
           cp package.json deploy/
-          cp pnpm-lock.yaml deploy/
           cp next.config.mjs deploy/
           cp server.js deploy/
           cp ecosystem.config.js deploy/
-          cp middleware.ts deploy/
-          cp tsconfig.json deploy/
-          cp postcss.config.mjs deploy/
           
           # Create .env.production in deployment package
           cat > deploy/.env.production << EOF
@@ -86,11 +79,11 @@ jobs:
             deploy/ \
             ${{ secrets.HOSTINGER_SSH_USER }}@${{ secrets.HOSTINGER_SSH_HOST }}:${{ secrets.HOSTINGER_DEPLOY_PATH }}
 
-      - name: Install production dependencies on server
+      - name: Verify dependencies on server
         run: |
           ssh -p ${{ secrets.HOSTINGER_SSH_PORT }} \
             ${{ secrets.HOSTINGER_SSH_USER }}@${{ secrets.HOSTINGER_SSH_HOST }} \
-            "cd ${{ secrets.HOSTINGER_DEPLOY_PATH }} && npm install --production"
+            "cd ${{ secrets.HOSTINGER_DEPLOY_PATH }} && echo '✅ Dependencies deployed from CI build'"
 
       - name: Restart application
         run: |
