@@ -58,6 +58,8 @@ jobs:
           cp middleware.ts deploy/
           cp tsconfig.json deploy/
           cp postcss.config.mjs deploy/
+          cp tailwind.config.ts deploy/
+          cp .npmrc deploy/
           
           # Create .env.production in deployment package
           cat > deploy/.env.production << EOF
@@ -90,7 +92,7 @@ jobs:
         run: |
           ssh -p ${{ secrets.HOSTINGER_SSH_PORT }} \
             ${{ secrets.HOSTINGER_SSH_USER }}@${{ secrets.HOSTINGER_SSH_HOST }} \
-            "cd ${{ secrets.HOSTINGER_DEPLOY_PATH }} && npm install --production"
+            "cd ${{ secrets.HOSTINGER_DEPLOY_PATH }} && pnpm install --prod --no-frozen-lockfile"
 
       - name: Restart application
         run: |
