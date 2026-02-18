@@ -5,17 +5,39 @@ export async function GET() {
   try {
     const supabase = await createClient();
 
-    // Check which tables exist
-    const { data: tables, error: tablesError } = await supabase
-      .from('information_schema.tables')
-      .select('table_name')
-      .eq('table_schema', 'public');
-
+    // Check which tables exist using raw SQL
+    const { data: tablesData, error: tablesError } = await supabase.rpc('get_public_tables', {});
+    
+    let tableNames: string[] = [];
+    
+    // If the RPC doesn't exist, try checking each table individually
     if (tablesError) {
-      return NextResponse.json(
-        { error: tablesError.message },
-        { status: 500 }
-      );
+      // Try to query each expected table to see if it exists
+      const expectedTables = [
+        'profiles',
+        'products',
+        'regions',
+        'region_inventory',
+        'pickup_locations',
+        'pickup_inventory',
+        'delivery_fee_tiers',
+        'delivery_slots',
+        'orders',
+        'order_items',
+      ];
+      
+      for (const tableName of expectedTables) {
+        const { error } = await supabase
+          .from(tableName)
+          .select('*', { count: 'exact', head: true })
+          .limit(0);
+        
+        if (!error) {
+          tableNames.push(tableName);
+        }
+      }
+    } else {
+      tableNames = tablesData || [];
     }
 
     // Check for products
@@ -41,7 +63,6 @@ export async function GET() {
       'order_items',
     ];
 
-    const tableNames = tables?.map((t: any) => t.table_name) || [];
     const missingTables = expectedTables.filter(t => !tableNames.includes(t));
 
     return NextResponse.json({

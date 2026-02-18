@@ -7,7 +7,7 @@ export async function POST(request: Request) {
     const { searchParams } = new URL(request.url);
     const step = searchParams.get('step') || 'postgis';
     
-    const filename = step === 'postgis' ? '000a_postgis_setup.sql' : '000b_schema_and_data.sql';
+    const filename = step === 'postgis' ? '000a_postgis_setup.sql' : '000b_schema_and_data_v2.sql';
     const migrationPath = path.join(process.cwd(), 'scripts', filename);
     const migrationSQL = await fs.readFile(migrationPath, 'utf-8');
 

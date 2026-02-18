@@ -4,6 +4,17 @@
 -- Prerequisites: PostGIS extension must be enabled
 -- ============================================================================
 
+-- Ensure we're using the public schema and PostGIS is available
+SET search_path TO public, extensions;
+
+-- Verify PostGIS is available before proceeding
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'postgis') THEN
+    RAISE EXCEPTION 'PostGIS extension is not enabled. Run Step 1 first!';
+  END IF;
+END $$;
+
 -- ============================================================================
 -- STEP 1: CREATE PROFILES TABLE AND SETUP
 -- ============================================================================
@@ -97,6 +108,16 @@ CREATE POLICY "Allow public read access to products"
 -- ============================================================================
 -- STEP 3: CREATE REGIONS TABLE (with PostGIS)
 -- ============================================================================
+
+-- Verify geometry type is available
+DO $$
+BEGIN
+  -- This will fail if PostGIS isn't loaded
+  EXECUTE 'SELECT ''POINT(0 0)''::geometry';
+EXCEPTION
+  WHEN undefined_object THEN
+    RAISE EXCEPTION 'PostGIS geometry type not available. Run: CREATE EXTENSION postgis;';
+END $$;
 
 CREATE TABLE IF NOT EXISTS public.regions (
   id SERIAL PRIMARY KEY,
@@ -409,3 +430,9 @@ INSERT INTO public.products (sku, name, description, category, price, image_url,
   ('PRE003', 'Hybrid Pre-Roll 5pk', 'Five balanced hybrid pre-rolls', 'pre-rolls', 32.00, '/images/products/hybrid-preroll.webp', true),
   ('PRE004', 'Infused Pre-Roll 3pk', 'Three diamond-infused premium pre-rolls', 'pre-rolls', 45.00, '/images/products/infused-preroll.webp', true)
 ON CONFLICT (sku) DO NOTHING;
+
+-- Success message
+DO $$
+BEGIN
+  RAISE NOTICE 'Migration completed successfully! Database is ready.';
+END $$;

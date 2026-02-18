@@ -47,6 +47,24 @@ export default function DatabaseMigrationPage() {
     }
   };
 
+  const copyAndOpen = async (step: MigrationStep) => {
+    const sql = step === 'postgis' ? postgisSQL : schemaSQL;
+    try {
+      await navigator.clipboard.writeText(sql);
+      setCopiedStep(step);
+      setTimeout(() => setCopiedStep(null), 3000);
+      
+      // Open SQL editor in new tab
+      const projectRef = process.env.NEXT_PUBLIC_SUPABASE_URL?.split('//')[1]?.split('.')[0];
+      window.open(`https://supabase.com/dashboard/project/${projectRef}/sql/new`, '_blank');
+      
+      // Show success message
+      alert('✓ SQL copied to clipboard!\n\nPaste it in the Supabase SQL Editor tab that just opened (Ctrl+V or Cmd+V), then click Run.');
+    } catch (err) {
+      alert('Failed to copy to clipboard');
+    }
+  };
+
   const copyToClipboard = async (step: MigrationStep) => {
     try {
       const sql = step === 'postgis' ? postgisSQL : schemaSQL;
@@ -176,18 +194,31 @@ export default function DatabaseMigrationPage() {
               </button>
             ) : (
               <div className="space-y-4">
+                <div className="p-4 bg-blue-100 dark:bg-blue-900/30 border-2 border-blue-400 rounded-md">
+                  <p className="text-blue-900 dark:text-blue-100 font-semibold mb-3">🚀 Quick Start (One Click):</p>
+                  <button
+                    onClick={() => copyAndOpen('postgis')}
+                    className="w-full px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 font-semibold text-lg"
+                  >
+                    📋 Copy SQL & Open Editor →
+                  </button>
+                  <p className="text-sm text-blue-700 dark:text-blue-300 mt-2">
+                    This will copy the SQL to your clipboard and open Supabase SQL Editor in a new tab. Just paste (Ctrl+V) and click Run!
+                  </p>
+                </div>
+
                 <div className="flex gap-3">
                   <button
                     onClick={() => copyToClipboard('postgis')}
-                    className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                    className="px-6 py-2 border border-blue-600 text-blue-600 rounded-md hover:bg-blue-50 dark:hover:bg-blue-900/20"
                   >
-                    {copiedStep === 'postgis' ? '✓ Copied!' : 'Copy SQL'}
+                    {copiedStep === 'postgis' ? '✓ Copied!' : 'Copy SQL Only'}
                   </button>
                   <button
                     onClick={openSupabaseSQLEditor}
                     className="px-6 py-2 border border-border rounded-md hover:bg-accent"
                   >
-                    Open Supabase SQL Editor →
+                    Open Editor Only →
                   </button>
                   <button
                     onClick={() => setPostgisSQL('')}
@@ -198,14 +229,14 @@ export default function DatabaseMigrationPage() {
                 </div>
 
                 <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-md text-sm">
-                  <strong className="text-blue-800 dark:text-blue-300">Instructions for Step 1:</strong>
+                  <strong className="text-blue-800 dark:text-blue-300">After clicking the button above:</strong>
                   <ol className="list-decimal list-inside mt-2 space-y-1 text-blue-700 dark:text-blue-400">
-                    <li>Click "Copy SQL" above</li>
-                    <li>Click "Open Supabase SQL Editor" to open a new tab</li>
-                    <li>Paste the SQL into the editor (Ctrl+V or Cmd+V)</li>
+                    <li>A new Supabase SQL Editor tab will open</li>
+                    <li>The SQL is already copied to your clipboard</li>
+                    <li>Paste it (Ctrl+V or Cmd+V) into the editor</li>
                     <li>Click "Run" or press Ctrl+Enter</li>
-                    <li>Verify you see "PostGIS version" in the results (should show 3.3 or higher)</li>
-                    <li><strong>Only proceed to Step 2 after Step 1 completes successfully</strong></li>
+                    <li>Verify you see "PostGIS version 3.3" in the results</li>
+                    <li><strong>Only proceed to Step 2 after this completes successfully</strong></li>
                   </ol>
                 </div>
 
@@ -241,18 +272,31 @@ export default function DatabaseMigrationPage() {
               </button>
             ) : (
               <div className="space-y-4">
+                <div className="p-4 bg-green-100 dark:bg-green-900/30 border-2 border-green-400 rounded-md">
+                  <p className="text-green-900 dark:text-green-100 font-semibold mb-3">🚀 Quick Start (One Click):</p>
+                  <button
+                    onClick={() => copyAndOpen('schema')}
+                    className="w-full px-6 py-3 bg-green-600 text-white rounded-md hover:bg-green-700 font-semibold text-lg"
+                  >
+                    📋 Copy SQL & Open Editor →
+                  </button>
+                  <p className="text-sm text-green-700 dark:text-green-300 mt-2">
+                    This will copy the SQL to your clipboard and open Supabase SQL Editor. Just paste (Ctrl+V) and click Run!
+                  </p>
+                </div>
+
                 <div className="flex gap-3">
                   <button
                     onClick={() => copyToClipboard('schema')}
-                    className="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+                    className="px-6 py-2 border border-green-600 text-green-600 rounded-md hover:bg-green-50 dark:hover:bg-green-900/20"
                   >
-                    {copiedStep === 'schema' ? '✓ Copied!' : 'Copy SQL'}
+                    {copiedStep === 'schema' ? '✓ Copied!' : 'Copy SQL Only'}
                   </button>
                   <button
                     onClick={openSupabaseSQLEditor}
                     className="px-6 py-2 border border-border rounded-md hover:bg-accent"
                   >
-                    Open Supabase SQL Editor →
+                    Open Editor Only →
                   </button>
                   <button
                     onClick={() => setSchemaSQL('')}
@@ -263,14 +307,14 @@ export default function DatabaseMigrationPage() {
                 </div>
 
                 <div className="p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-md text-sm">
-                  <strong className="text-green-800 dark:text-green-300">Instructions for Step 2:</strong>
+                  <strong className="text-green-800 dark:text-green-300">After clicking the button above:</strong>
                   <ol className="list-decimal list-inside mt-2 space-y-1 text-green-700 dark:text-green-400">
                     <li>Make sure Step 1 completed successfully first!</li>
-                    <li>Click "Copy SQL" above</li>
-                    <li>Go to Supabase SQL Editor (or open a new tab)</li>
-                    <li>Paste the SQL into the editor (Ctrl+V or Cmd+V)</li>
+                    <li>A new Supabase SQL Editor tab will open</li>
+                    <li>The SQL is already copied to your clipboard</li>
+                    <li>Paste it (Ctrl+V or Cmd+V) into the editor</li>
                     <li>Click "Run" or press Ctrl+Enter</li>
-                    <li>Wait for completion (may take 10-30 seconds)</li>
+                    <li>Wait for completion (10-30 seconds)</li>
                     <li>Return here and click "Refresh Status" to verify all tables are created</li>
                   </ol>
                 </div>
