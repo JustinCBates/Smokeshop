@@ -26,7 +26,7 @@ jobs:
           version: 8
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
 
       - name: Build application
         run: pnpm build
@@ -65,7 +65,7 @@ jobs:
           NEXT_PUBLIC_SUPABASE_URL=${{ secrets.SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}
           COINBASE_COMMERCE_API_KEY=${{ secrets.COINBASE_COMMERCE_API_KEY }}
-          COINBASE_COMMERCE_WEBHOOK_SECRET=${{ secrets.COINBASE_WEBHOOK_SECRET }}
+          COINBASE_WEBHOOK_SECRET=${{ secrets.COINBASE_WEBHOOK_SECRET }}
           NEXT_PUBLIC_SITE_URL=https://thcdeliveryguy.com
           AGE_VERIFICATION_PROVIDER=dob-photo
           PORT=3000

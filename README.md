@@ -32,21 +32,24 @@ A modern e-commerce platform for a smokeshop built with Next.js, Supabase (Postg
 ### Local Development
 
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/JustinCBates/Smokeshop.git
    cd Smokeshop
    ```
 
 2. **Install dependencies**
+
    ```bash
    pnpm install
    ```
 
 3. **Set up environment variables**
+
    ```bash
    cp .env.example .env.local
    ```
-   
+
    Edit `.env.local` with your credentials:
    - Supabase URL and anon key
    - Stripe secret and publishable keys
@@ -58,6 +61,7 @@ A modern e-commerce platform for a smokeshop built with Next.js, Supabase (Postg
    - Or run `scripts/000_run_all.sql` in the SQL Editor
 
 5. **Run the development server**
+
    ```bash
    pnpm dev
    ```
@@ -154,6 +158,7 @@ This project is private and proprietary.
 ## Support
 
 For issues and questions:
+
 - Check [DEPLOYMENT.md](DEPLOYMENT.md) for deployment help
 - Review Supabase documentation: https://supabase.com/docs
 - Review Stripe documentation: https://stripe.com/docs

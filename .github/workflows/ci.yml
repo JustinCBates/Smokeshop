@@ -2,9 +2,9 @@ name: CI - Build & Test
 
 on:
   pull_request:
-    branches: [ main, develop ]
+    branches: [ build, main ]
   push:
-    branches: [ develop ]
+    branches: [ working, build ]
 
 jobs:
   build:
@@ -19,7 +19,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
 
       - name: Install pnpm
         uses: pnpm/action-setup@v2
@@ -27,7 +26,7 @@ jobs:
           version: 8
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
 
       - name: Run linter
         run: pnpm lint
@@ -38,6 +37,7 @@ jobs:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
           COINBASE_COMMERCE_API_KEY: ${{ secrets.COINBASE_COMMERCE_API_KEY }}
+          COINBASE_WEBHOOK_SECRET: ${{ secrets.COINBASE_WEBHOOK_SECRET }}
           NEXT_PUBLIC_SITE_URL: https://thcdeliveryguy.com
 
       - name: Check for build output
