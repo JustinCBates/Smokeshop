@@ -41,7 +41,14 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  const protectedPaths = ['/account', '/partner', '/admin']
+  // Admin database page is temporarily public for setup
+  const publicAdminPaths = ['/admin/database']
+  const protectedPaths = ['/account', '/partner']
+  
+  const isPublicAdmin = publicAdminPaths.some((path) =>
+    request.nextUrl.pathname.startsWith(path),
+  )
+  
   const isProtected = protectedPaths.some((path) =>
     request.nextUrl.pathname.startsWith(path),
   )
@@ -51,6 +58,11 @@ export async function updateSession(request: NextRequest) {
     url.pathname = '/auth/login'
     url.searchParams.set('redirect', request.nextUrl.pathname)
     return NextResponse.redirect(url)
+  }
+  
+  // Allow public admin paths without authentication
+  if (isPublicAdmin) {
+    return supabaseResponse
   }
 
   // IMPORTANT: You *must* return the supabaseResponse object as it is.
