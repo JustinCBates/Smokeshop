@@ -386,3 +386,4 @@ pm2 restart smokeshop  # or restart via hPanel
 - [ ] Domain configured
 - [ ] SSL certificate installed
 - [ ] Application tested and verified
+# Last deployed: Thu Feb 19 00:26:40 UTC 2026
