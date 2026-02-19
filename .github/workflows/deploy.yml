@@ -89,7 +89,11 @@ jobs:
         run: |
           ssh -p ${{ secrets.HOSTINGER_SSH_PORT }} \
             ${{ secrets.HOSTINGER_SSH_USER }}@${{ secrets.HOSTINGER_SSH_HOST }} \
-            "bash -lc 'cd ${{ secrets.HOSTINGER_DEPLOY_PATH }} && pm2 restart smokeshop || pm2 start ecosystem.config.js'"
+            "bash -lc 'cd ${{ secrets.HOSTINGER_DEPLOY_PATH }} && \
+             pm2 delete smokeshop 2>/dev/null || true && \
+             pm2 start server.js --name smokeshop --node-args=\"--max-old-space-size=2048\" && \
+             pm2 save && \
+             pm2 list'"
 
       - name: Verify deployment
         run: |
