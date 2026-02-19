@@ -89,11 +89,13 @@ jobs:
         run: |
           ssh -p ${{ secrets.HOSTINGER_SSH_PORT }} \
             ${{ secrets.HOSTINGER_SSH_USER }}@${{ secrets.HOSTINGER_SSH_HOST }} \
-            "bash -lc 'cd ${{ secrets.HOSTINGER_DEPLOY_PATH }} && \
-             pm2 delete smokeshop 2>/dev/null || true && \
-             pm2 start server.js --name smokeshop --node-args=\"--max-old-space-size=2048\" && \
-             pm2 save && \
-             pm2 list'"
+            "cd ${{ secrets.HOSTINGER_DEPLOY_PATH }} && \
+             (pkill -f 'node.*server.js' || true) && \
+             sleep 2 && \
+             nohup node server.js > /dev/null 2>&1 & \
+             sleep 3 && \
+             pgrep -f 'node.*server.js' && \
+             echo 'Application started successfully'"
 
       - name: Verify deployment
         run: |
