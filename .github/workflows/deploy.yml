@@ -50,6 +50,7 @@ jobs:
           cp package.json deploy/
           cp next.config.mjs deploy/
           cp server.js deploy/
+          cp restart.sh deploy/
           cp ecosystem.config.js deploy/
           
           # Create .env.production in deployment package
@@ -89,13 +90,7 @@ jobs:
         run: |
           ssh -p ${{ secrets.HOSTINGER_SSH_PORT }} \
             ${{ secrets.HOSTINGER_SSH_USER }}@${{ secrets.HOSTINGER_SSH_HOST }} \
-            "cd ${{ secrets.HOSTINGER_DEPLOY_PATH }} && \
-             pkill -f 'node.*server.js' || true && \
-             sleep 2 && \
-             (PORT=3000 nohup node server.js > app.log 2>&1 &) && \
-             sleep 2 && \
-             echo 'Application restart command executed' && \
-             ps aux | grep 'node.*server.js' | grep -v grep || echo 'Process check completed'"
+            "cd ${{ secrets.HOSTINGER_DEPLOY_PATH }} && chmod +x restart.sh && bash restart.sh"
 
       - name: Verify deployment
         run: |
