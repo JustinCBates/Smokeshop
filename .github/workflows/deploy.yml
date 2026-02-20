@@ -92,10 +92,10 @@ jobs:
             "cd ${{ secrets.HOSTINGER_DEPLOY_PATH }} && \
              pkill -f 'node.*server.js' || true && \
              sleep 2 && \
-             PORT=3000 nohup node server.js > app.log 2>&1 & \
-             echo \$! > app.pid && \
+             (PORT=3000 nohup node server.js > app.log 2>&1 &) && \
              sleep 2 && \
-             echo 'Application restarted. PID:' && cat app.pid"
+             echo 'Application restart command executed' && \
+             ps aux | grep 'node.*server.js' | grep -v grep || echo 'Process check completed'"
 
       - name: Verify deployment
         run: |
