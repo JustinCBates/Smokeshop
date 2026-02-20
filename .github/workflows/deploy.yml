@@ -52,6 +52,8 @@ jobs:
           cp -r node_modules deploy/
           cp package.json deploy/
           cp next.config.mjs deploy/
+          cp tsconfig.json deploy/
+          cp middleware.ts deploy/
           cp server.js deploy/
           cp restart.sh deploy/
           cp check-deployment.sh deploy/
