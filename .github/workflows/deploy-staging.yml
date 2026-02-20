@@ -1,15 +1,15 @@
-name: Deploy to Hostinger
+name: Deploy to Staging
 
 on:
   push:
-    branches: [ main ]
+    branches: [ build ]
   workflow_dispatch:  # Allow manual trigger
 
 jobs:
   deploy:
-    name: Deploy to Production
+    name: Deploy to Staging
     runs-on: ubuntu-latest
-    environment: production
+    environment: staging
     
     steps:
       - name: Checkout code
@@ -67,9 +67,9 @@ jobs:
           echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}" >> deploy/.env.production
           echo "COINBASE_COMMERCE_API_KEY=${{ secrets.COINBASE_COMMERCE_API_KEY }}" >> deploy/.env.production
           echo "COINBASE_WEBHOOK_SECRET=${{ secrets.COINBASE_WEBHOOK_SECRET }}" >> deploy/.env.production
-          echo "NEXT_PUBLIC_SITE_URL=https://thcdeliveryguy.com" >> deploy/.env.production
+          echo "NEXT_PUBLIC_SITE_URL=https://staging.thcdeliveryguy.com" >> deploy/.env.production
           echo "AGE_VERIFICATION_PROVIDER=dob-photo" >> deploy/.env.production
-          echo "PORT=3000" >> deploy/.env.production
+          echo "PORT=3001" >> deploy/.env.production
 
       - name: Setup SSH key
         run: |
@@ -78,25 +78,25 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -p ${{ secrets.HOSTINGER_SSH_PORT }} -H ${{ secrets.HOSTINGER_SSH_HOST }} >> ~/.ssh/known_hosts
 
-      - name: Deploy to Hostinger
+      - name: Deploy to Staging Server
         run: |
           # Sync files to Hostinger
           rsync -avz --delete \
             -e "ssh -p ${{ secrets.HOSTINGER_SSH_PORT }}" \
             deploy/ \
-            ${{ secrets.HOSTINGER_SSH_USER }}@${{ secrets.HOSTINGER_SSH_HOST }}:${{ secrets.HOSTINGER_DEPLOY_PATH }}
+            ${{ secrets.HOSTINGER_SSH_USER }}@${{ secrets.HOSTINGER_SSH_HOST }}:${{ secrets.STAGING_DEPLOY_PATH }}
 
       - name: Set file permissions on server
         run: |
           ssh -p ${{ secrets.HOSTINGER_SSH_PORT }} \
             ${{ secrets.HOSTINGER_SSH_USER }}@${{ secrets.HOSTINGER_SSH_HOST }} \
-            "chmod -R 755 ${{ secrets.HOSTINGER_DEPLOY_PATH }}"
+            "chmod -R 755 ${{ secrets.STAGING_DEPLOY_PATH }}"
 
       - name: Restart application
         run: |
           ssh -p ${{ secrets.HOSTINGER_SSH_PORT }} \
             ${{ secrets.HOSTINGER_SSH_USER }}@${{ secrets.HOSTINGER_SSH_HOST }} \
-            "cd ${{ secrets.HOSTINGER_DEPLOY_PATH }} && chmod +x restart.sh && bash restart.sh"
+            "cd ${{ secrets.STAGING_DEPLOY_PATH }} && chmod +x restart.sh && bash restart.sh"
 
       - name: Verify deployment
         run: |
@@ -104,16 +104,16 @@ jobs:
           sleep 10
           
           # Check if site is accessible
-          response=$(curl -s -o /dev/null -w "%{http_code}" https://thcdeliveryguy.com)
+          response=$(curl -s -o /dev/null -w "%{http_code}" https://staging.thcdeliveryguy.com)
           if [ $response -eq 200 ] || [ $response -eq 301 ] || [ $response -eq 302 ]; then
-            echo "✅ Deployment successful - Site is accessible"
+            echo "✅ Staging deployment successful - Site is accessible"
           else
-            echo "⚠️ Warning: Site returned HTTP $response"
+            echo "⚠️ Warning: Staging site returned HTTP $response"
           fi
 
       - name: Deployment summary
         run: |
-          echo "🚀 Deployment completed successfully!"
+          echo "🚀 Staging deployment completed successfully!"
           echo "📦 Build: $(cat deploy/.next/BUILD_ID)"
-          echo "🌐 URL: https://thcdeliveryguy.com"
+          echo "🌐 URL: https://staging.thcdeliveryguy.com"
           echo "⏰ Time: $(date)"
