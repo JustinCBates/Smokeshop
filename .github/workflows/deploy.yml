@@ -51,6 +51,7 @@ jobs:
           cp next.config.mjs deploy/
           cp server.js deploy/
           cp restart.sh deploy/
+          cp check-deployment.sh deploy/
           cp .htaccess deploy/
           cp ecosystem.config.js deploy/
           
