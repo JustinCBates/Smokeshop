@@ -17,25 +17,25 @@ export default async function HomePage() {
       {/* Hero */}
       <section className="flex flex-col items-center justify-center px-4 py-24 text-center lg:py-32">
         <h1 className="max-w-3xl text-balance text-4xl font-bold tracking-tight text-foreground md:text-6xl">
-          Premium Smoke &{" "}
-          <span className="text-primary">Wellness Products</span>
+          Natural Wellness &{" "}
+          <span className="text-primary">Botanical Products</span>
         </h1>
         <p className="mx-auto mt-4 max-w-xl text-pretty text-lg text-muted-foreground">
-          {siteConfig.description} Delivery and pickup available across Missouri.
+          {siteConfig.description}
         </p>
         <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
           <Link
             href="/shop"
             className="flex items-center gap-2 rounded-md bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
           >
-            Shop Now
+            Explore Products
             <ArrowRight className="h-4 w-4" />
           </Link>
           <Link
             href="/shop?category=glass-pipes-bongs"
             className="rounded-md border border-border px-6 py-3 text-sm font-semibold text-foreground transition-colors hover:bg-secondary"
           >
-            Browse Glass
+            Premium Glassware
           </Link>
         </div>
       </section>
@@ -47,20 +47,20 @@ export default async function HomePage() {
             <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
               <Truck className="h-6 w-6 text-primary" />
             </div>
-            <h3 className="font-semibold text-foreground">Local Delivery</h3>
+            <h3 className="font-semibold text-foreground">Fast Delivery</h3>
             <p className="text-sm text-muted-foreground">
-              Same-day and next-day delivery to Kansas City, St. Louis,
-              Springfield, and Columbia areas.
+              Same-day and next-day delivery available. Convenient scheduling
+              to fit your lifestyle.
             </p>
           </div>
           <div className="flex flex-col items-center gap-3 text-center">
             <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
               <MapPin className="h-6 w-6 text-primary" />
             </div>
-            <h3 className="font-semibold text-foreground">In-Store Pickup</h3>
+            <h3 className="font-semibold text-foreground">Pickup Available</h3>
             <p className="text-sm text-muted-foreground">
-              Order online and pick up at any of our locations. Full product
-              selection including cannabis flower.
+              Order online and pick up at your convenience. Multiple locations
+              throughout Colorado.
             </p>
           </div>
           <div className="flex flex-col items-center gap-3 text-center">
@@ -69,8 +69,8 @@ export default async function HomePage() {
             </div>
             <h3 className="font-semibold text-foreground">Age Verified</h3>
             <p className="text-sm text-muted-foreground">
-              Secure age verification process. Two-step verification for
-              cannabis and Delta products.
+              Secure verification process ensures responsible access.
+              Must be 21+ to purchase.
             </p>
           </div>
         </div>

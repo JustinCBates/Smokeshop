@@ -4,62 +4,62 @@
  */
 export const siteConfig = {
   /** Store branding */
-  name: "Generic Smokeshop",
-  tagline: "Premium Smoke & Wellness",
+  name: "Botanical Wellness Co",
+  tagline: "Natural Wellness Products",
   description:
-    "Your trusted source for premium glass, vapes, accessories, CBD, and cannabis products.",
+    "Premium botanical products and wellness essentials delivered to your door. Serving Colorado communities.",
 
   /** Contact info */
   contact: {
-    address: "123 Main Street, Kansas City, MO 64101",
-    phone: "(555) 420-0000",
-    email: "info@genericsmokeshop.com",
+    address: "Denver, CO 80202",
+    phone: "(555) 123-4567",
+    email: "hello@neutraldevelopment.com",
   },
 
   /** Social links */
   social: {
-    instagram: "https://instagram.com/genericsmokeshop",
-    facebook: "https://facebook.com/genericsmokeshop",
-    twitter: "https://twitter.com/genericsmokeshop",
+    instagram: "https://instagram.com/botanicalwellness",
+    facebook: "https://facebook.com/botanicalwellness",
+    twitter: "https://twitter.com/botanicalwellness",
   },
 
   /** Branding assets */
   logo: "/images/logo.png",
 
   /** State identifier for region filtering */
-  state: "MO",
+  state: "CO",
 
   /** Product categories (display order) */
   categories: [
     {
       slug: "glass-pipes-bongs",
-      name: "Glass Pipes & Bongs",
-      description: "Water pipes, hand pipes, bubblers, dab rigs",
+      name: "Premium Glassware",
+      description: "Artisan glass pieces, water filtration systems",
     },
     {
       slug: "vapes-e-cigarettes",
-      name: "Vapes & E-Cigarettes",
-      description: "Vape pens, cartridges, mods, e-liquids",
+      name: "Vaporizers",
+      description: "Premium vaporizer devices and accessories",
     },
     {
       slug: "rolling-papers-wraps",
-      name: "Rolling Papers & Wraps",
-      description: "Papers, blunt wraps, cones, rolling trays",
+      name: "Rolling Essentials",
+      description: "Premium papers, wraps, and accessories",
     },
     {
       slug: "accessories",
       name: "Accessories",
-      description: "Grinders, lighters, torches, ashtrays, storage",
+      description: "Storage solutions, tools, and essentials",
     },
     {
       slug: "cbd-delta-products",
-      name: "CBD / Delta Products",
-      description: "CBD flower, edibles, tinctures, delta-8",
+      name: "Botanical Wellness",
+      description: "Natural botanical products and supplements",
     },
     {
       slug: "cannabis-flower",
-      name: "Cannabis Flower",
-      description: "Strains (indica, sativa, hybrid), pre-rolls",
+      name: "Premium Botanicals",
+      description: "Curated botanical selections (21+ only)",
     },
   ],
 } as const;

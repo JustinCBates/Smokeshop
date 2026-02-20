@@ -34,7 +34,7 @@ jobs:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
           COINBASE_COMMERCE_API_KEY: ${{ secrets.COINBASE_COMMERCE_API_KEY }}
-          NEXT_PUBLIC_SITE_URL: https://thcdeliveryguy.com
+          NEXT_PUBLIC_SITE_URL: https://neutraldevelopment.com
           AGE_VERIFICATION_PROVIDER: dob-photo
 
       - name: Create deployment package
@@ -66,7 +66,7 @@ jobs:
           echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}" >> deploy/.env.production
           echo "COINBASE_COMMERCE_API_KEY=${{ secrets.COINBASE_COMMERCE_API_KEY }}" >> deploy/.env.production
           echo "COINBASE_WEBHOOK_SECRET=${{ secrets.COINBASE_WEBHOOK_SECRET }}" >> deploy/.env.production
-          echo "NEXT_PUBLIC_SITE_URL=https://thcdeliveryguy.com" >> deploy/.env.production
+          echo "NEXT_PUBLIC_SITE_URL=https://neutraldevelopment.com" >> deploy/.env.production
           echo "AGE_VERIFICATION_PROVIDER=dob-photo" >> deploy/.env.production
           echo "PORT=3000" >> deploy/.env.production
 
@@ -103,7 +103,7 @@ jobs:
           sleep 10
           
           # Check if site is accessible
-          response=$(curl -s -o /dev/null -w "%{http_code}" https://thcdeliveryguy.com)
+          response=$(curl -s -o /dev/null -w "%{http_code}" https://neutraldevelopment.com)
           if [ $response -eq 200 ] || [ $response -eq 301 ] || [ $response -eq 302 ]; then
             echo "✅ Deployment successful - Site is accessible"
           else
@@ -114,5 +114,5 @@ jobs:
         run: |
           echo "🚀 Deployment completed successfully!"
           echo "📦 Build: $(cat deploy/.next/BUILD_ID)"
-          echo "🌐 URL: https://thcdeliveryguy.com"
+          echo "🌐 URL: https://neutraldevelopment.com"
           echo "⏰ Time: $(date)"
