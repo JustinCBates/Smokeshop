@@ -5,13 +5,18 @@
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
+# Load environment variables from .env.production
+if [ -f .env.production ]; then
+    export $(grep -v '^#' .env.production | xargs)
+fi
+
 echo "Stopping existing Node.js processes..."
 pkill -f 'node.*server.js' || true
 sleep 2
 
 echo "Starting application..."
 cd "$(dirname "$0")"
-PORT=3000 nohup node server.js > app.log 2>&1 &
+nohup node server.js > app.log 2>&1 &
 sleep 2
 
 echo "Checking process..."
