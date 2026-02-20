@@ -1,0 +1,17 @@
+# Enable rewrite engine
+RewriteEngine On
+
+# Don't proxy static files if they exist
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Proxy all other requests to Node.js app on port 3000
+RewriteRule ^(.*)$ http://127.0.0.1:3000/$1 [P,L,QSA]
+
+# Security headers (if mod_headers is available)
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set X-XSS-Protection "1; mode=block"
+</IfModule>
