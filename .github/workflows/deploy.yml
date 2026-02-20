@@ -60,17 +60,15 @@ jobs:
           cp .htaccess deploy/
           cp ecosystem.config.js deploy/
           
-          # Create .env.production in deployment package
-          cat > deploy/.env.production << EOF
-NODE_ENV=production
-NEXT_PUBLIC_SUPABASE_URL=${{ secrets.SUPABASE_URL }}
-NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}
-COINBASE_COMMERCE_API_KEY=${{ secrets.COINBASE_COMMERCE_API_KEY }}
-COINBASE_WEBHOOK_SECRET=${{ secrets.COINBASE_WEBHOOK_SECRET }}
-NEXT_PUBLIC_SITE_URL=https://thcdeliveryguy.com
-AGE_VERIFICATION_PROVIDER=dob-photo
-PORT=3000
-EOF
+          #Create .env.production
+          echo "NODE_ENV=production" > deploy/.env.production
+          echo "NEXT_PUBLIC_SUPABASE_URL=${{ secrets.SUPABASE_URL }}" >> deploy/.env.production
+          echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}" >> deploy/.env.production
+          echo "COINBASE_COMMERCE_API_KEY=${{ secrets.COINBASE_COMMERCE_API_KEY }}" >> deploy/.env.production
+          echo "COINBASE_WEBHOOK_SECRET=${{ secrets.COINBASE_WEBHOOK_SECRET }}" >> deploy/.env.production
+          echo "NEXT_PUBLIC_SITE_URL=https://thcdeliveryguy.com" >> deploy/.env.production
+          echo "AGE_VERIFICATION_PROVIDER=dob-photo" >> deploy/.env.production
+          echo "PORT=3000" >> deploy/.env.production
 
       - name: Setup SSH key
         run: |
