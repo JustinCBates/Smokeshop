@@ -45,6 +45,9 @@ jobs:
           
           # Copy built application and dependencies from CI
           cp -r .next deploy/
+          cp -r app deploy/
+          cp -r components deploy/
+          cp -r lib deploy/
           cp -r public deploy/
           cp -r node_modules deploy/
           cp package.json deploy/
