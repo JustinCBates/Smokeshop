@@ -26,6 +26,7 @@
     "leaflet": "latest",
     "lucide-react": "latest",
     "next": "^15",
+    "pg": "latest",
     "react": "^19",
     "react-dom": "^19",
     "react-leaflet": "latest",
@@ -36,6 +37,7 @@
   },
   "devDependencies": {
     "@types/node": "^22",
+    "@types/pg": "latest",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "autoprefixer": "^10",

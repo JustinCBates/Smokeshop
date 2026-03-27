@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { query } from "@/lib/database/client";
 import { siteConfig } from "@/lib/site-config";
 import { ShopContent } from "./shop-content";
 import type { Metadata } from "next";
@@ -14,28 +15,56 @@ export default async function ShopPage({
   searchParams: Promise<{ category?: string; q?: string }>;
 }) {
   const params = await searchParams;
-  const supabase = await createClient();
 
-  let query = supabase.from("products").select("*").order("product_name");
+  // Build PostgreSQL query for products (from VPS database)
+  let productQuery = `
+    SELECT 
+      sku,
+      name as product_name,
+      description as product_description,
+      image_url,
+      category,
+      (price * 100)::integer as price_in_cents,
+      in_stock,
+      true as delivery_eligible,
+      false as featured
+    FROM products
+    WHERE 1=1
+  `;
+  const queryParams: any[] = [];
+  let paramIndex = 1;
 
   if (params.category) {
-    query = query.eq("category", params.category);
+    productQuery += ` AND category = $${paramIndex}`;
+    queryParams.push(params.category);
+    paramIndex++;
   }
 
   if (params.q) {
-    query = query.ilike("product_name", `%${params.q}%`);
+    productQuery += ` AND name ILIKE $${paramIndex}`;
+    queryParams.push(`%${params.q}%`);
+    paramIndex++;
   }
 
-  const { data: products } = await query;
+  productQuery += ` ORDER BY name`;
 
-  // Fetch all regions and pickup locations for client filtering
-  const [{ data: regions }, { data: pickupLocations }, { data: regionInventory }, { data: pickupInventory }] =
-    await Promise.all([
-      supabase.from("regions").select("*").eq("is_active", true),
-      supabase.from("pickup_locations").select("*").eq("is_active", true),
-      supabase.from("region_inventory").select("*"),
-      supabase.from("pickup_inventory").select("*"),
-    ]);
+  // Fetch products from VPS PostgreSQL
+  const products = await query(productQuery, queryParams);
+
+  // Fetch regions, locations, and inventory from Supabase (for now)
+  // TODO: Migrate these to VPS PostgreSQL once regions/inventory data is populated
+  const supabase = await createClient();
+  const [
+    { data: regions },
+    { data: pickupLocations },
+    { data: regionInventory },
+    { data: pickupInventory },
+  ] = await Promise.all([
+    supabase.from("regions").select("*").eq("is_active", true),
+    supabase.from("pickup_locations").select("*").eq("is_active", true),
+    supabase.from("region_inventory").select("*"),
+    supabase.from("pickup_inventory").select("*"),
+  ]);
 
   return (
     <ShopContent
