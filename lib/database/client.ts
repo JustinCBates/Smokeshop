@@ -1,4 +1,4 @@
-import { Pool } from "pg";
+import 'server-only';import { Pool } from "pg";
 
 let pool: Pool | null = null;
 
