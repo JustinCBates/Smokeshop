@@ -5,7 +5,7 @@ import { ShopContent } from "./shop-content";
 import type { Metadata } from "next";
 
 // Force dynamic rendering since we query database
-export const dynamic = 'force-dynamic'
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Shop",
@@ -51,8 +51,14 @@ export default async function ShopPage({
 
   productQuery += ` ORDER BY name`;
 
-  // Fetch products from VPS PostgreSQL
-  const products = await query(productQuery, queryParams);
+  // Fetch products from VPS PostgreSQL with error handling
+  let products = [];
+  try {
+    products = await query(productQuery, queryParams);
+  } catch (error) {
+    console.error("Failed to fetch products:", error);
+    // Continue with empty array
+  }
 
   // Fetch regions, locations, and inventory from Supabase (for now)
   // TODO: Migrate these to VPS PostgreSQL once regions/inventory data is populated

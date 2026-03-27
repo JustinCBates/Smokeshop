@@ -1,4 +1,5 @@
-import 'server-only';import { Pool } from "pg";
+import "server-only";
+import { Pool } from "pg";
 
 let pool: Pool | null = null;
 
@@ -35,9 +36,19 @@ export async function query<T = any>(
   text: string,
   params?: any[],
 ): Promise<T[]> {
-  const pool = getPool();
-  const result = await pool.query(text, params);
-  return result.rows;
+  try {
+    const pool = getPool();
+    const result = await pool.query(text, params);
+    return result.rows;
+  } catch (error: any) {
+    console.error('[Database Query Error]:', {
+      message: error.message,
+      code: error.code,
+      query: text.substring(0, 100) + '...',
+    });
+    // Re-throw so calling code can handle it
+    throw error;
+  }
 }
 
 /**

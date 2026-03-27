@@ -2,14 +2,14 @@ name: Deploy to Staging
 
 on:
   push:
-    branches: [ build ]
-  workflow_dispatch:  # Allow manual trigger
+    branches: [build]
+  workflow_dispatch: # Allow manual trigger
 
 jobs:
   deploy:
     name: Deploy to Staging
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -17,7 +17,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: "20"
 
       - name: Install pnpm
         uses: pnpm/action-setup@v2
@@ -42,7 +42,7 @@ jobs:
         run: |
           # Create a clean deployment directory
           mkdir -p deploy
-          
+
           # Copy built application and dependencies from CI
           cp -r .next deploy/
           cp -r app deploy/
@@ -60,10 +60,10 @@ jobs:
           cp index.php deploy/
           cp .htaccess deploy/
           cp ecosystem.config.js deploy/
-          
+
           # Update index.php to proxy to staging port 3001
           sed -i "s|http://127.0.0.1:3000|http://127.0.0.1:3001|g" deploy/index.php
-          
+
           #Create .env.production
           echo "NODE_ENV=production" > deploy/.env.production
           echo "NEXT_PUBLIC_SUPABASE_URL=${{ secrets.SUPABASE_URL }}" >> deploy/.env.production
@@ -106,7 +106,7 @@ jobs:
         run: |
           echo "Waiting for application to start..."
           sleep 10
-          
+
           # Check if site is accessible
           response=$(curl -s -o /dev/null -w "%{http_code}" https://staging.neutraldevelopment.com)
           if [ $response -eq 200 ] || [ $response -eq 301 ] || [ $response -eq 302 ]; then

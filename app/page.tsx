@@ -4,22 +4,29 @@ import { query } from "@/lib/database/client";
 import { ArrowRight, Truck, MapPin, ShieldCheck, Package } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 // Force dynamic rendering since we query database
-export const dynamic = 'force-dynamic'
+export const dynamic = "force-dynamic";
 export default async function HomePage() {
   // Fetch featured products from VPS PostgreSQL
   // Since we don't have a featured column yet, show first 4 products
-  const featuredProducts = await query(`
-    SELECT 
-      sku,
-      name as product_name,
-      description as product_description,
-      image_url,
-      (price * 100)::integer as price_in_cents,
-      category
-    FROM products
-    ORDER BY created_at DESC
-    LIMIT 4
-  `);
+  let featuredProducts = [];
+
+  try {
+    featuredProducts = await query(`
+      SELECT 
+        sku,
+        name as product_name,
+        description as product_description,
+        image_url,
+        (price * 100)::integer as price_in_cents,
+        category
+      FROM products
+      ORDER BY created_at DESC
+      LIMIT 4
+    `);
+  } catch (error) {
+    console.error("Failed to fetch featured products:", error);
+    // Continue with empty array - page will still render
+  }
 
   return (
     <div className="flex flex-col">
