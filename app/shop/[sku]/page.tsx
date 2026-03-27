@@ -5,6 +5,9 @@ import { notFound } from "next/navigation";
 import { ProductDetail } from "./product-detail";
 import type { Metadata } from "next";
 
+// Force dynamic rendering since we query database
+export const dynamic = 'force-dynamic'
+
 interface Props {
   params: Promise<{ sku: string }>;
 }

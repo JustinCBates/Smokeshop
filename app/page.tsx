@@ -3,7 +3,8 @@ import { siteConfig } from "@/lib/site-config";
 import { query } from "@/lib/database/client";
 import { ArrowRight, Truck, MapPin, ShieldCheck, Package } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
-
+// Force dynamic rendering since we query database
+export const dynamic = 'force-dynamic'
 export default async function HomePage() {
   // Fetch featured products from VPS PostgreSQL
   // Since we don't have a featured column yet, show first 4 products

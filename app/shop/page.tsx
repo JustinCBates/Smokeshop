@@ -4,6 +4,9 @@ import { siteConfig } from "@/lib/site-config";
 import { ShopContent } from "./shop-content";
 import type { Metadata } from "next";
 
+// Force dynamic rendering since we query database
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: "Shop",
   description: `Browse our full catalog of premium products at ${siteConfig.name}.`,
