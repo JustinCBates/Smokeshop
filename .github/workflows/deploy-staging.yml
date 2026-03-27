@@ -60,6 +60,9 @@ jobs:
           cp .htaccess deploy/
           cp ecosystem.config.js deploy/
           
+          # Update index.php to proxy to staging port 3001
+          sed -i "s|http://127.0.0.1:3000|http://127.0.0.1:3001|g" deploy/index.php
+          
           #Create .env.production
           echo "NODE_ENV=production" > deploy/.env.production
           echo "NEXT_PUBLIC_SUPABASE_URL=${{ secrets.SUPABASE_URL }}" >> deploy/.env.production
