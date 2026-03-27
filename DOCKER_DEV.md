@@ -47,6 +47,7 @@ pnpm dev
 ### 3. Access the Application
 
 Open your browser on Windows and go to:
+
 - http://localhost:3000
 
 The application will run inside the container but be accessible from your Windows browser!
@@ -276,6 +277,7 @@ Or use the Remote Explorer in VS Code sidebar.
 ### Keep PowerShell Open
 
 Keep one PowerShell window to manage Docker:
+
 ```powershell
 # Terminal 1: Docker management
 docker-compose logs -f dev

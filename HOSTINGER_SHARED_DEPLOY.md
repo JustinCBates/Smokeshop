@@ -3,11 +3,13 @@
 ## 🎯 Current Status
 
 **Problem Identified:**
+
 - Domain: thcdeliveryguy.com (82.29.199.157)
 - Points to: Hostinger shared hosting plan
 - Status: Blank page (nothing deployed)
 
 **VPS Confusion:**
+
 - You have a VPS at srv1407636.hstgr.cloud (different server)
 - That's NOT where thcdeliveryguy.com points
 - We need to deploy to the shared hosting plan instead
@@ -50,7 +52,7 @@ In hPanel for thcdeliveryguy.com:
    - Go to: **Advanced** → **Node.js**
    - Check if Node.js app is set up
    - Note the **Application Root** path
-   
+
    Common paths:
    - `/home/u{numbers}/domains/thcdeliveryguy.com/public_html`
    - `/home/{username}/public_html`
@@ -168,6 +170,7 @@ After deploying files:
 ### SSH Not Available?
 
 Some Hostinger plans don't include SSH. In that case:
+
 1. Use File Manager to upload code
 2. Or upgrade to a plan with SSH access
 3. Or use GitHub Actions to auto-deploy
@@ -175,6 +178,7 @@ Some Hostinger plans don't include SSH. In that case:
 ### Node.js Not Available?
 
 Check your hosting plan. Node.js requires:
+
 - Premium Web Hosting or higher
 - Business Web Hosting
 - Cloud Hosting

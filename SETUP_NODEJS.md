@@ -26,6 +26,7 @@ You need Node.js to run npm commands and develop/build the application.
    node --version
    npm --version
    ```
+
    - You should see version numbers (e.g., v20.x.x and 10.x.x)
 
 ### Method 2: Using Winget (Windows Package Manager)
@@ -86,6 +87,7 @@ npm --version
 ```
 
 Expected output:
+
 ```
 v20.11.0 (or similar)
 10.2.4 (or similar)
@@ -136,6 +138,7 @@ npm run check-all
 ### Issue: "node is not recognized" after installation
 
 **Solution:**
+
 1. Restart your terminal/PowerShell completely
 2. If still not working, restart your computer
 3. Check if Node.js is in your PATH:
@@ -143,10 +146,11 @@ npm run check-all
    $env:PATH -split ';' | Select-String nodejs
    ```
 4. If not in PATH, add it manually:
+
    ```powershell
    # Add to current session
    $env:PATH += ";C:\Program Files\nodejs\"
-   
+
    # Add permanently (run PowerShell as Administrator)
    [Environment]::SetEnvironmentVariable("Path", $env:Path + ";C:\Program Files\nodejs\", "Machine")
    ```
@@ -154,6 +158,7 @@ npm run check-all
 ### Issue: npm install fails with permission errors
 
 **Solution:**
+
 ```powershell
 # Configure npm to use a different directory for global packages
 npm config set prefix "$env:APPDATA\npm"
@@ -165,6 +170,7 @@ $env:PATH += ";$env:APPDATA\npm"
 ### Issue: EACCES or permission denied errors
 
 **Solution:**
+
 ```powershell
 # Run PowerShell as Administrator
 # Or fix npm permissions:
@@ -174,6 +180,7 @@ npm config set cache $env:LOCALAPPDATA\npm-cache --global
 ### Issue: Slow npm installs
 
 **Solution:**
+
 ```powershell
 # Use pnpm instead (much faster)
 npm install -g pnpm
