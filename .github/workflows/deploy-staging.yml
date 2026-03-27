@@ -33,6 +33,7 @@ jobs:
           NODE_ENV: production
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          DATABASE_URL: ${{ secrets.SMOKESHOP_DATABASE_URL }}
           COINBASE_COMMERCE_API_KEY: ${{ secrets.COINBASE_COMMERCE_API_KEY }}
           NEXT_PUBLIC_SITE_URL: https://staging.neutraldevelopment.com
           AGE_VERIFICATION_PROVIDER: dob-photo
@@ -67,6 +68,7 @@ jobs:
           echo "NODE_ENV=production" > deploy/.env.production
           echo "NEXT_PUBLIC_SUPABASE_URL=${{ secrets.SUPABASE_URL }}" >> deploy/.env.production
           echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}" >> deploy/.env.production
+          echo "DATABASE_URL=${{ secrets.SMOKESHOP_DATABASE_URL }}" >> deploy/.env.production
           echo "COINBASE_COMMERCE_API_KEY=${{ secrets.COINBASE_COMMERCE_API_KEY }}" >> deploy/.env.production
           echo "COINBASE_WEBHOOK_SECRET=${{ secrets.COINBASE_WEBHOOK_SECRET }}" >> deploy/.env.production
           echo "NEXT_PUBLIC_SITE_URL=https://staging.neutraldevelopment.com" >> deploy/.env.production
