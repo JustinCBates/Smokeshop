@@ -30,6 +30,7 @@
     "react": "^19",
     "react-dom": "^19",
     "react-leaflet": "latest",
+    "swagger-ui-react": "^5.17.14",
     "server-only": "latest",
     "swr": "latest",
     "tailwind-merge": "latest",
