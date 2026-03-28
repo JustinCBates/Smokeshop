@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createCharge } from "@/lib/coinbase-commerce";
+import { query } from "@/lib/database/client";
 
 export async function POST(req: NextRequest) {
   try {
@@ -29,7 +30,7 @@ export async function POST(req: NextRequest) {
     if (!user && !guest_email) {
       return NextResponse.json(
         { error: "Authentication or guest email required" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -40,21 +41,32 @@ export async function POST(req: NextRequest) {
     if (!age_verified) {
       return NextResponse.json(
         { error: "Age verification required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
-    // Server-side price validation: look up each product from DB
+    // Server-side price validation: look up each product from VPS PostgreSQL
     const skus = items.map((i: any) => i.sku);
-    const { data: products } = await supabase
-      .from("products")
-      .select("sku, product_name, price_in_cents")
-      .in("sku", skus);
+
+    // Build parameterized query for product lookup
+    const placeholders = skus
+      .map((_: any, idx: number) => `$${idx + 1}`)
+      .join(",");
+    const productQuery = `
+      SELECT 
+        sku,
+        name as product_name,
+        (price * 100)::integer as price_in_cents
+      FROM products
+      WHERE sku IN (${placeholders})
+    `;
+
+    const products = await query(productQuery, skus);
 
     if (!products || products.length !== items.length) {
       return NextResponse.json(
         { error: "Some products not found" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -144,7 +156,7 @@ export async function POST(req: NextRequest) {
       console.error("Order creation failed:", orderError);
       return NextResponse.json(
         { error: "Failed to create order" },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -165,11 +177,11 @@ export async function POST(req: NextRequest) {
     // Create Coinbase Commerce charge
     const origin = req.headers.get("origin") || "http://localhost:3000";
     const totalUSD = (order.total_cents / 100).toFixed(2);
-    
+
     const itemsList = items
       .map((item: any) => `${item.quantity}x ${item.product_name}`)
       .join(", ");
-    
+
     const charge = await createCharge({
       name: `Order #${order.id.slice(0, 8)}`,
       description: `Smokeshop order: ${itemsList}`,
@@ -190,23 +202,23 @@ export async function POST(req: NextRequest) {
     // Update order with crypto charge info
     await supabase
       .from("orders")
-      .update({ 
+      .update({
         payment_id: charge.id,
-        crypto_charge_code: charge.code 
+        crypto_charge_code: charge.code,
       })
       .eq("id", order.id);
 
     // Return the hosted payment URL
-    return NextResponse.json({ 
+    return NextResponse.json({
       url: charge.hosted_url,
       order_id: order.id,
-      charge_code: charge.code
+      charge_code: charge.code,
     });
   } catch (err: any) {
     console.error("Checkout error:", err);
     return NextResponse.json(
       { error: err.message || "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

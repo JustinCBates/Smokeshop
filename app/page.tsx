@@ -1,16 +1,32 @@
-import Link from "next/link"
-import { siteConfig } from "@/lib/site-config"
-import { createClient } from "@/lib/supabase/server"
-import { ArrowRight, Truck, MapPin, ShieldCheck, Package } from "lucide-react"
-import { formatCurrency } from "@/lib/utils"
-
+import Link from "next/link";
+import { siteConfig } from "@/lib/site-config";
+import { query } from "@/lib/database/client";
+import { ArrowRight, Truck, MapPin, ShieldCheck, Package } from "lucide-react";
+import { formatCurrency } from "@/lib/utils";
+// Force dynamic rendering since we query database
+export const dynamic = "force-dynamic";
 export default async function HomePage() {
-  const supabase = await createClient()
-  const { data: featuredProducts } = await supabase
-    .from("products")
-    .select("sku, product_name, product_description, image_url, price_in_cents, category")
-    .eq("featured", true)
-    .limit(4)
+  // Fetch featured products from VPS PostgreSQL
+  // Since we don't have a featured column yet, show first 4 products
+  let featuredProducts = [];
+
+  try {
+    featuredProducts = await query(`
+      SELECT 
+        sku,
+        name as product_name,
+        description as product_description,
+        image_url,
+        (price * 100)::integer as price_in_cents,
+        category
+      FROM products
+      ORDER BY created_at DESC
+      LIMIT 4
+    `);
+  } catch (error) {
+    console.error("Failed to fetch featured products:", error);
+    // Continue with empty array - page will still render
+  }
 
   return (
     <div className="flex flex-col">
@@ -49,8 +65,8 @@ export default async function HomePage() {
             </div>
             <h3 className="font-semibold text-foreground">Fast Delivery</h3>
             <p className="text-sm text-muted-foreground">
-              Same-day and next-day delivery available. Convenient scheduling
-              to fit your lifestyle.
+              Same-day and next-day delivery available. Convenient scheduling to
+              fit your lifestyle.
             </p>
           </div>
           <div className="flex flex-col items-center gap-3 text-center">
@@ -69,8 +85,8 @@ export default async function HomePage() {
             </div>
             <h3 className="font-semibold text-foreground">Age Verified</h3>
             <p className="text-sm text-muted-foreground">
-              Secure verification process ensures responsible access.
-              Must be 21+ to purchase.
+              Secure verification process ensures responsible access. Must be
+              21+ to purchase.
             </p>
           </div>
         </div>
@@ -156,5 +172,5 @@ export default async function HomePage() {
         </div>
       </section>
     </div>
-  )
+  );
 }
