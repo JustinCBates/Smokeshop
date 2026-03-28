@@ -79,12 +79,7 @@ Remove-IfExists (Join-Path $FrontendRepoPath 'lib\coinbase-commerce.ts')
 Remove-IfExists (Join-Path $FrontendRepoPath 'docker-compose.postgres.yml')
 Remove-IfExists (Join-Path $FrontendRepoPath '.env.postgres')
 Remove-IfExists (Join-Path $FrontendRepoPath 'seed_products.sql')
-Remove-IfExists (Join-Path $FrontendRepoPath 'scripts\000_full_migration.sql')
-Remove-IfExists (Join-Path $FrontendRepoPath 'scripts\000b_schema_and_data.sql')
-Remove-IfExists (Join-Path $FrontendRepoPath 'scripts\000b_schema_and_data_v2.sql')
-Remove-IfExists (Join-Path $FrontendRepoPath 'scripts\000_run_all_complete.sql')
-Remove-IfExists (Join-Path $FrontendRepoPath 'scripts\013_seed_sample_data.sql')
-Remove-IfExists (Join-Path $FrontendRepoPath 'scripts\016_update_product_images.sql')
+Remove-IfExists (Join-Path $FrontendRepoPath 'scripts')
 
 Write-Host "Pruning backend repo (API-only app surface)..."
 Remove-IfExists (Join-Path $BackendRepoPath 'app')
@@ -103,6 +98,10 @@ Copy-IfExists -From (Join-Path $SourceRepoPath 'lib\auth') -To (Join-Path $Backe
 Copy-IfExists -From (Join-Path $SourceRepoPath 'lib\coinbase-commerce.ts') -To (Join-Path $BackendRepoPath 'lib\coinbase-commerce.ts')
 Copy-IfExists -From (Join-Path $SourceRepoPath 'lib\supabase') -To (Join-Path $BackendRepoPath 'lib\supabase')
 Copy-IfExists -From (Join-Path $SourceRepoPath 'lib\env.ts') -To (Join-Path $BackendRepoPath 'lib\env.ts')
+Copy-IfExists -From (Join-Path $SourceRepoPath 'scripts') -To (Join-Path $BackendRepoPath 'scripts')
+Copy-IfExists -From (Join-Path $SourceRepoPath 'seed_products.sql') -To (Join-Path $BackendRepoPath 'seed_products.sql')
+Copy-IfExists -From (Join-Path $SourceRepoPath 'docker-compose.postgres.yml') -To (Join-Path $BackendRepoPath 'docker-compose.postgres.yml')
+Copy-IfExists -From (Join-Path $SourceRepoPath '.env.postgres') -To (Join-Path $BackendRepoPath '.env.postgres')
 
 if ($InitGit) {
   Write-Host "Initializing git repos..."
