@@ -102,6 +102,30 @@ Copy-IfExists -From (Join-Path $SourceRepoPath 'scripts') -To (Join-Path $Backen
 Copy-IfExists -From (Join-Path $SourceRepoPath 'seed_products.sql') -To (Join-Path $BackendRepoPath 'seed_products.sql')
 Copy-IfExists -From (Join-Path $SourceRepoPath 'docker-compose.postgres.yml') -To (Join-Path $BackendRepoPath 'docker-compose.postgres.yml')
 Copy-IfExists -From (Join-Path $SourceRepoPath '.env.postgres') -To (Join-Path $BackendRepoPath '.env.postgres')
+Copy-IfExists -From (Join-Path $SourceRepoPath 'VPS_POSTGRES_SETUP.md') -To (Join-Path $BackendRepoPath 'VPS_POSTGRES_SETUP.md')
+
+$requiredBackendFiles = @(
+  'docker-compose.postgres.yml',
+  '.env.postgres',
+  'seed_products.sql',
+  'VPS_POSTGRES_SETUP.md',
+  'scripts\\000a_postgis_setup.sql',
+  'scripts\\000b_schema_and_data.sql',
+  'scripts\\000_full_migration.sql',
+  'scripts\\run-migrations.js'
+)
+
+$missing = @()
+foreach ($relPath in $requiredBackendFiles) {
+  $fullPath = Join-Path $BackendRepoPath $relPath
+  if (-not (Test-Path $fullPath)) {
+    $missing += $relPath
+  }
+}
+
+if ($missing.Count -gt 0) {
+  throw "Backend split missing required PostgreSQL files: $($missing -join ', ')"
+}
 
 if ($InitGit) {
   Write-Host "Initializing git repos..."
