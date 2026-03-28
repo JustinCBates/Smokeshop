@@ -48,8 +48,7 @@ function getThemeBySku(sku: string): { from: string; to: string; accent: string 
   return { from: "#1f2937", to: "#111827", accent: "#d1d5db" };
 }
 
-function buildGeneratedSvg(fileName: string): string {
-  const sku = fileName.replace(/\.[^/.]+$/, "").toUpperCase();
+function buildGeneratedSvg(sku: string): string {
   const title = PRODUCT_LABELS[sku] ?? "Product";
   const { from, to, accent } = getThemeBySku(sku);
   const escapedTitle = escapeXml(title);
@@ -81,46 +80,44 @@ function getContentType(fileName: string): string {
   if (lower.endsWith(".jpg") || lower.endsWith(".jpeg")) return "image/jpeg";
   if (lower.endsWith(".png")) return "image/png";
   if (lower.endsWith(".webp")) return "image/webp";
-  if (lower.endsWith(".gif")) return "image/gif";
-  if (lower.endsWith(".svg")) return "image/svg+xml";
   return "application/octet-stream";
 }
 
 export async function GET(
   _request: NextRequest,
-  { params }: { params: Promise<{ filename: string }> },
+  { params }: { params: Promise<{ sku: string }> },
 ) {
-  const { filename } = await params;
-
+  const { sku: rawSku } = await params;
+  const sku = rawSku.toUpperCase();
   const productsDir = path.join(process.cwd(), "public", "images", "products");
-  const requestedPath = path.join(productsDir, filename);
-  const placeholderPath = path.join(productsDir, "placeholder.svg");
 
-  try {
-    const data = await fs.readFile(requestedPath);
-    return new Response(data, {
-      headers: {
-        "Content-Type": getContentType(filename),
-        "Cache-Control": "public, max-age=300",
-      },
-    });
-  } catch {
+  const candidates = [
+    `${sku}.jpg`,
+    `${sku}.jpeg`,
+    `${sku}.png`,
+    `${sku}.webp`,
+  ];
+
+  for (const fileName of candidates) {
+    const filePath = path.join(productsDir, fileName);
     try {
-      const generated = buildGeneratedSvg(filename);
-      return new Response(generated, {
+      const data = await fs.readFile(filePath);
+      return new Response(data, {
         headers: {
-          "Content-Type": "image/svg+xml",
+          "Content-Type": getContentType(fileName),
           "Cache-Control": "public, max-age=300",
         },
       });
     } catch {
-      const placeholder = await fs.readFile(placeholderPath);
-      return new Response(placeholder, {
-        headers: {
-          "Content-Type": "image/svg+xml",
-          "Cache-Control": "public, max-age=300",
-        },
-      });
+      // Try next extension.
     }
   }
+
+  const generated = buildGeneratedSvg(sku);
+  return new Response(generated, {
+    headers: {
+      "Content-Type": "image/svg+xml",
+      "Cache-Control": "public, max-age=300",
+    },
+  });
 }

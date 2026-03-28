@@ -61,7 +61,10 @@ export function ProductCard({
             src={product.image_url}
             alt={product.product_name}
             className="h-full w-full object-cover transition-transform group-hover:scale-105"
-            crossOrigin="anonymous"
+            onError={(e) => {
+              e.currentTarget.onerror = null;
+              e.currentTarget.src = "/images/products/placeholder.svg";
+            }}
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center">

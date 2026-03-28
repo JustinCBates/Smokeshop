@@ -16,7 +16,7 @@ export default async function HomePage() {
         sku,
         name as product_name,
         description as product_description,
-        image_url,
+        ('/api/product-image/' || sku) as image_url,
         (price * 100)::integer as price_in_cents,
         category
       FROM products
@@ -112,7 +112,11 @@ export default async function HomePage() {
                         src={product.image_url}
                         alt={product.product_name}
                         className="h-full w-full object-cover transition-transform group-hover:scale-105"
-                        crossOrigin="anonymous"
+                        onError={(e) => {
+                          e.currentTarget.onerror = null;
+                          e.currentTarget.src =
+                            "/images/products/placeholder.svg";
+                        }}
                       />
                     ) : (
                       <div className="flex h-full w-full items-center justify-center">

@@ -37,7 +37,7 @@ export default async function ProductPage({ params }: Props) {
       sku,
       name as product_name,
       description as product_description,
-      image_url,
+      ('/api/product-image/' || sku) as image_url,
       category,
       (price * 100)::integer as price_in_cents,
       in_stock,
@@ -69,7 +69,7 @@ export default async function ProductPage({ params }: Props) {
         sku,
         name as product_name,
         description as product_description,
-        image_url,
+        ('/api/product-image/' || sku) as image_url,
         category,
         (price * 100)::integer as price_in_cents,
         in_stock,
@@ -79,10 +79,10 @@ export default async function ProductPage({ params }: Props) {
       WHERE category = $1 AND sku != $2
       LIMIT 4
       `,
-      [product.category, sku]
+      [product.category, sku],
     );
   } catch (error) {
-    console.error('Failed to fetch related products:', error);
+    console.error("Failed to fetch related products:", error);
   }
 
   return (
