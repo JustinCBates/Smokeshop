@@ -25,7 +25,7 @@ export default async function ShopPage({
       sku,
       name as product_name,
       description as product_description,
-      image_url,
+      ('/api/product-image/' || sku) as image_url,
       category,
       (price * 100)::integer as price_in_cents,
       in_stock,
